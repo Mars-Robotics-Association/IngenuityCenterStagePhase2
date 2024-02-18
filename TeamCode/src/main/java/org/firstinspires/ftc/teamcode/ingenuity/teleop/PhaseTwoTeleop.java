@@ -45,6 +45,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     private final boolean useSecondController;
+    private final boolean drivingEnabled;
 
 
     private GamepadEx driverOp;
@@ -58,8 +59,9 @@ public abstract class PhaseTwoTeleop extends OpMode {
 
     public String lastBumper = "none";
 
-    protected PhaseTwoTeleop(boolean useSecondController) {
+    protected PhaseTwoTeleop(boolean useSecondController, boolean drivingEnabled) {
         this.useSecondController = useSecondController;
+        this.drivingEnabled = drivingEnabled;
     }
 
 
@@ -110,11 +112,13 @@ public abstract class PhaseTwoTeleop extends OpMode {
     public void loop() {
         driverOp.readButtons();
 
-        bot.ftcLibMecanumDrive().loop(driverOp.isDown(GamepadKeys.Button.A),
-                toggleStick.getState(),
-                driverOp.getLeftX(),
-                driverOp.getLeftY(),
-                driverOp.getRightX());
+        if (drivingEnabled) {
+            bot.ftcLibMecanumDrive().loop(driverOp.isDown(GamepadKeys.Button.A),
+                    toggleStick.getState(),
+                    driverOp.getLeftX(),
+                    driverOp.getLeftY(),
+                    driverOp.getRightX());
+        }
 
         toggleStick.readValue();
 
@@ -162,7 +166,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
 //        } else {
 //            bot.winch().stop();
 //        }
-        bot.winch().writeTelemetry();
+//        bot.winch().writeTelemetry();
 
         if (driverOp.isDown(GamepadKeys.Button.DPAD_RIGHT)) {
             if (driverOp.wasJustReleased(GamepadKeys.Button.A)) {

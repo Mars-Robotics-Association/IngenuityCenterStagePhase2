@@ -33,7 +33,7 @@ public class PhaseTwoBot {
     public static double gripperClosedPosition = .44;
     public static double wristPosition = 0.5;
     public static double gripperPosition = gripperOpenPosition;
-    public static double armExpo = 0.90;
+    public static double armExpo = 0.01;
     public static double wristPullUp = 0.35;
 
     public static int armRearPickupStart = 8550;
@@ -65,7 +65,7 @@ public class PhaseTwoBot {
                 gripperArm().gripperCloseAction(),
                 new SleepAction(0.3),
                 gripperArm().setWristTuckedUp(),
-                droneLauncher().stowLauncherArmAction(),
+                //droneLauncher().stowLauncherArmAction(),
                 gripperArm().lowerArmToLimit()
         );
     }
@@ -83,11 +83,12 @@ public class PhaseTwoBot {
 
     public class GripperArm {
         private WormMotor armMotor;
-        private Servo gripper;
-        private Servo wrist;
+        private WormMotor armMotor2;
+//        private Servo gripper;
+//        private Servo wrist;
         private Timing.Timer gripperCloseTimer;
         private Timing.Timer gripperOpenTimer;
-        private TouchSensor touchSensor;  // Touch sensor Object
+//        private TouchSensor touchSensor;  // Touch sensor Object
         private Motor.RunMode armRunMode = Motor.RunMode.RawPower;
 
         private boolean pullUpMode = false;
@@ -142,18 +143,20 @@ public class PhaseTwoBot {
         }
 
         public void init() {
-            armMotor = new WormMotor(hardwareMap, "armMotor", Motor.GoBILDA.RPM_312);
-            gripper = hardwareMap.servo.get("gripper");
-            wrist = hardwareMap.servo.get("wrist");
+            armMotor = new WormMotor(hardwareMap, "leftArmMotor", Motor.GoBILDA.RPM_1150);
+            armMotor2 = new WormMotor(hardwareMap, "rightArmMotor", Motor.GoBILDA.RPM_1150);
+//            gripper = hardwareMap.servo.get("gripper");
+//            wrist = hardwareMap.servo.get("wrist");
 
             armMotor.setInverted(true);
+            armMotor2.setInverted(true);
             armMotor.setPositionPI(positionCoefficient, positionIntegralCoeff);
             armMotor.setPositionTolerance(positionTolerance);
 
             gripperCloseTimer = new Timing.Timer(gripperCloseTime, TimeUnit.MILLISECONDS);
             gripperOpenTimer = new Timing.Timer(gripperOpenTime, TimeUnit.MILLISECONDS);
 
-            touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
+//            touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
         }
 
         private void setArmRunMode(Motor.RunMode runMode) {
@@ -250,6 +253,7 @@ public class PhaseTwoBot {
                 armSetpointIdx = -1;
 
                 armMotor.motor.setPower(armExpo * cubed + (1.0 - armExpo) * netTrigger);
+                armMotor2.motor.setPower(armExpo * cubed + (1.0 - armExpo) * netTrigger);
             }
         }
 
@@ -262,11 +266,11 @@ public class PhaseTwoBot {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                if (touchSensor.isPressed()) {
-                    armMotor.set(0);
-                    armMotor.encoder.reset();
-                    return false;
-                }
+//                if (touchSensor.isPressed()) {
+//                    armMotor.set(0);
+//                    armMotor.encoder.reset();
+//                    return false;
+//                }
 
                 if (isCanceled()) {
                     armMotor.set(0);
@@ -311,9 +315,9 @@ public class PhaseTwoBot {
             return moveArmToPositionAction(armStops[stop], stepName);
         }
 
-        public Action applyAutoWristAction() {
-            return new InstantAction(() -> wrist.setPosition(wristServoValue(armMotor.getCurrentPosition())));
-        }
+//        public Action applyAutoWristAction() {
+//            return new InstantAction(() -> wrist.setPosition(wristServoValue(armMotor.getCurrentPosition())));
+//        }
 
         private class MoveArmToPositionAction extends CancelableAction {
             private boolean initialized = false;
@@ -376,12 +380,12 @@ public class PhaseTwoBot {
                 }
 
 
-                if (touchSensor.isPressed()) {
-                    packet.put(stepName + "at limit", true);
-                    armMotor.encoder.reset();
-                } else {
-                    packet.put(stepName + "at limit", false);
-                }
+//                if (touchSensor.isPressed()) {
+//                    packet.put(stepName + "at limit", true);
+//                    armMotor.encoder.reset();
+//                } else {
+//                    packet.put(stepName + "at limit", false);
+//                }
 
                 packet.put(stepName + "arm pos", armMotor.getDistance());
 
@@ -389,7 +393,7 @@ public class PhaseTwoBot {
                     packet.put(stepName + "at target", true);
                     armMotor.set(0.0);
                     if (autoWrist) {
-                        wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
+//                        wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
                     }
                     armMovementAction = null;
                     return false;
@@ -397,7 +401,7 @@ public class PhaseTwoBot {
                     packet.put(stepName + "at target", false);
                     armMotor.set(1.0);
                     if (autoWrist) {
-                        wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
+//                        wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
                     }
                     return true;
                 }
@@ -417,7 +421,7 @@ public class PhaseTwoBot {
             if (gripperPosition != newPosition) {
                 gripperPosition = newPosition;
                 return new SequentialAction(
-                        new InstantAction(() -> gripper.setPosition(newPosition)),
+//                        new InstantAction(() -> gripper.setPosition(newPosition)),
                         new SleepAction(timeMs / 1000.0)
                 );
             } else {
@@ -437,7 +441,7 @@ public class PhaseTwoBot {
             if (wristPosition != pos) {
                 wristPosition = pos;
                 return new SequentialAction(
-                        new InstantAction(() -> wrist.setPosition(pos)),
+//                        new InstantAction(() -> wrist.setPosition(pos)),
                         new SleepAction(350 / 1000.0)
                 );
             } else {
@@ -459,19 +463,20 @@ public class PhaseTwoBot {
                 wristPosition = wristServoValue(armTicks);
             }
 
-            gripper.setPosition(armTicks < armMaxFlat && gripperOpenTimer.isTimerOn() && !gripperOpenTimer.done()
-                    ? gripperClosedPosition
-                    : gripperPosition);
-            wrist.setPosition(wristPosition);
+//            gripper.setPosition(armTicks < armMaxFlat && gripperOpenTimer.isTimerOn() && !gripperOpenTimer.done()
+//                    ? gripperClosedPosition
+//                    : gripperPosition);
+//            wrist.setPosition(wristPosition);
 
             telemetry.addData("arm: ", armMotor.encoder.getPosition());
             telemetry.addData("timer: ", gripperCloseTimer.elapsedTime());
 
-            lowerLimit = touchSensor.isPressed();
+//            lowerLimit = touchSensor.isPressed();
 
             if (armRunMode == Motor.RunMode.PositionControl) {
                 armMotor.set(armMotor.atTargetPosition() ||
                         (lowerLimit && armMotor.getCurrentPosition() > armStops[armSetpointIdx]) ? 0 : 1.0);
+                armMotor2.set(armMotor.get());
                 // if it's already at the lower limit and the arm is trying to go down, stop it
             }
 
@@ -567,14 +572,14 @@ public class PhaseTwoBot {
     }
 
     public class DroneLauncher {
-        private Servo droneLaunch;
+//        private Servo droneLaunch;
 
         public void init() {
-            droneLaunch = hardwareMap.servo.get("droneLaunch");
+//            droneLaunch = hardwareMap.servo.get("droneLaunch");
         }
 
         public void loop() {
-            droneLaunch.setPosition(launcherPosition);
+//            droneLaunch.setPosition(launcherPosition);
         }
 
         public void launchDrone() {
@@ -585,9 +590,9 @@ public class PhaseTwoBot {
             launcherPosition = launcherClosedPosition;
         }
 
-        public Action stowLauncherArmAction() {
-            return new InstantAction(() -> droneLaunch.setPosition(launcherClosedPosition));
-        }
+//        public Action stowLauncherArmAction() {
+//            return new InstantAction(() -> droneLaunch.setPosition(launcherClosedPosition));
+//        }
     }
 
     private Winch winch;
@@ -601,31 +606,31 @@ public class PhaseTwoBot {
     }
 
     public class Winch {
-        private Motor winchMotor;
+//        private Motor winchMotor;
 
         public Winch() {
-            winchMotor = new Motor(hardwareMap, "winchMotor", Motor.GoBILDA.RPM_117);
-            winchMotor.setRunMode(Motor.RunMode.RawPower);
+//            winchMotor = new Motor(hardwareMap, "winchMotor", Motor.GoBILDA.RPM_117);
+//            winchMotor.setRunMode(Motor.RunMode.RawPower);
         }
 
         public void windUp() {
-            winchMotor.set(0.3);
+//            winchMotor.set(0.3);
         }
 
         public void windDown() {
-            winchMotor.set(-0.3);
+//            winchMotor.set(-0.3);
         }
 
         public void stop() {
-            winchMotor.set(0);
+//            winchMotor.set(0);
         }
 
         public void setPower(double raw) {
-            winchMotor.set(raw);
+//            winchMotor.set(raw);
         }
 
-        public void writeTelemetry() {
-            telemetry.addData("winchPosition: ", winchMotor.getCurrentPosition());
-        }
+//        public void writeTelemetry() {
+//            telemetry.addData("winchPosition: ", winchMotor.getCurrentPosition());
+//        }
     }
 }

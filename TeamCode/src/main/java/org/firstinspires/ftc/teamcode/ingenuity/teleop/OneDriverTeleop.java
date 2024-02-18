@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.ingenuity.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "One Driver", group = "Mike Braskem TeleOp")
+@TeleOp(name = "One Driver", group = "Phase Two TeleOp")
 public class OneDriverTeleop extends PhaseTwoTeleop {
     public OneDriverTeleop() {
-        super(false);
+        super(false, true);
     }
 }

@@ -28,14 +28,14 @@ public class TestPlaceOne extends LinearOpMode {
 
             Actions.runBlocking(new SequentialAction(
                     bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne, "step 1"),
-                    bot.gripperArm().applyAutoWristAction(),
+//                    bot.gripperArm().applyAutoWristAction(),
                     new SleepAction(0.5),
                     bot.gripperArm().gripperOpenAction(),
                     new SleepAction(0.3),
                     bot.gripperArm().gripperCloseAction(),
                     bot.gripperArm().setWristTuckedUp(),
                     bot.gripperArm().moveArmToStopAction(1, "step 2"),
-                    bot.gripperArm().applyAutoWristAction(),
+//                    bot.gripperArm().applyAutoWristAction(),
                     bot.gripperArm().gripperOpenAction(),
                     new SleepAction(.5),
                     //new ParallelAction(
