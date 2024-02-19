@@ -32,7 +32,7 @@ public final class BackStageBlueRight3 extends LinearOpMode {
     public static double deliveryY = 27;
     public static double parkingX = 58;
     public static double parkingY = 56;
-    public static int backDelivery = 7700;
+    public static int backDelivery = 2250;
 
     @Override
     public void runOpMode() throws InterruptedException {

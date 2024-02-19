@@ -34,7 +34,7 @@ public final class FrontStageBlueLeft3 extends LinearOpMode {
     public static double deliveryY = 35;
     public static double parkingX = 58;
     public static double parkingY = 8;
-    public static int backDelivery = 7700;
+    public static int backDelivery = 2250;
     public static double armDelay = 4.25;
 
     @Override

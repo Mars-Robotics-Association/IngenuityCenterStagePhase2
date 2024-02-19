@@ -22,7 +22,7 @@ public class MeepMeepTesting {
     public static double deliveryY = 27;
     public static double parkingX = 58;
     public static double parkingY = 10;
-    public static int backDelivery = 7700;
+    public static int backDelivery = 2250;
 
 
     public static void main(String[] args) {

@@ -30,7 +30,7 @@ public final class BackStageRedCenter3 extends LinearOpMode {
     public static double deliveryY = -35;
     public static double parkingX = 58;
     public static double parkingY = -56;
-    public static int backDelivery = 7700;
+    public static int backDelivery = 2250;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,7 +53,7 @@ public final class BackStageRedCenter3 extends LinearOpMode {
                     .setReversed(true)
                     .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                     .splineTo(new Vector2d(11, -33), Math.toRadians(invPushAngle))
-                    .splineTo(new Vector2d(26, -42), Math.toRadians(00))
+                    .splineTo(new Vector2d(26, -42), Math.toRadians(0))
                     .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
                     .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
                     .stopAndAdd(new SequentialAction(
