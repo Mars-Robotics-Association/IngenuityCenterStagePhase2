@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 @Config
 public class TestArmMove extends LinearOpMode {
     public static int moveTo = 2500;
-    public static int moveTo2 = 1000;
+    public static int moveTo2 = 400;
     public static double sleepTime = 1.0;
 
     private PhaseTwoBot bot;
