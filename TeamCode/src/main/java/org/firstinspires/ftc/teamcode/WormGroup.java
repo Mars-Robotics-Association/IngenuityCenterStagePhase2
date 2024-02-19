@@ -54,7 +54,7 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
             }
 
             telemetry.addData("arm motor error " + i, error);
-            telemetry.addData("motor err int" + i, motorFollowerErrorSum);
+            telemetry.addData("motor err int " + i, motorFollowerErrorSum[i]);
 
             if (Math.abs(error) < armFollowerErrorThreshold) {
                 error = 0;
@@ -64,6 +64,11 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
 
             group[i].set(armPower + armFollowerKp * error + armFollowerKi * motorFollowerErrorSum[i]);
         }
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return group[0].getCurrentPosition();
     }
 
     @Override

@@ -65,7 +65,7 @@ public class PhaseTwoBot {
                 gripperArm().gripperCloseAction(),
                 new SleepAction(0.3),
                 gripperArm().setWristTuckedUp(),
-                //droneLauncher().stowLauncherArmAction(),
+                droneLauncher().stowLauncherArmAction(),
                 gripperArm().lowerArmToLimit()
         );
     }
@@ -192,7 +192,7 @@ public class PhaseTwoBot {
         }
 
         private int lastStopUp() {
-            int curPos = armMotor.encoder.getPosition();
+            int curPos = armMotor.getCurrentPosition();
             int i;
             for (i = 0; i < armStops.length; i++) {
                 if (curPos < armStops[i]) return i;
@@ -201,7 +201,7 @@ public class PhaseTwoBot {
         }
 
         private int nextStopDown() {
-            int curPos = armMotor.encoder.getPosition();
+            int curPos = armMotor.getCurrentPosition();
             int i;
             for (i = armStops.length - 1; i >= 0; i--) {
                 if (curPos > armStops[i]) return i;
@@ -259,7 +259,7 @@ public class PhaseTwoBot {
 
                 double armPower = armExpo * cubed + (1.0 - armExpo) * netTrigger;
 
-                armMotor.motor.setPower(armPower);
+                armMotor.set(armPower);
             }
         }
 
@@ -274,7 +274,7 @@ public class PhaseTwoBot {
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (touchSensor.isPressed()) {
                     armMotor.set(0);
-                    armMotor.encoder.reset();
+                    armMotor.resetEncoder();
                     return false;
                 }
 
@@ -291,7 +291,7 @@ public class PhaseTwoBot {
                     initialized = true;
                 }
 
-                packet.put("arm pos", armMotor.encoder.getPosition());
+                packet.put("arm pos", armMotor.getCurrentPosition());
 
                 return true;
             }
@@ -388,7 +388,7 @@ public class PhaseTwoBot {
 
                 if (touchSensor.isPressed()) {
                     packet.put(stepName + "at limit", true);
-                    armMotor.encoder.reset();
+                    armMotor.resetEncoder();
                 } else {
                     packet.put(stepName + "at limit", false);
                 }
@@ -474,7 +474,7 @@ public class PhaseTwoBot {
 //                    : gripperPosition);
 //            wrist.setPosition(wristPosition);
 
-            telemetry.addData("arm: ", armMotor.encoder.getPosition());
+            telemetry.addData("arm: ", armMotor.getCurrentPosition());
             telemetry.addData("timer: ", gripperCloseTimer.elapsedTime());
 
             lowerLimit = touchSensor.isPressed();
@@ -487,7 +487,7 @@ public class PhaseTwoBot {
             }
 
             if (lowerLimit) {
-                armMotor.encoder.reset();
+                armMotor.resetEncoder();
             }
         }
     }
@@ -557,9 +557,8 @@ public class PhaseTwoBot {
 
             // Show the elapsed game time and wheel power.
             telemetry.addLine("========== Encoders ==========");
-            telemetry.addData("Left:   ", rightFront.encoder.getPosition());
-            telemetry.addData("Right:  ", leftFront.encoder.getPosition());
-            telemetry.addData("Middle: ", rightBack.encoder.getPosition());
+            telemetry.addData("Par:   ", rightFront.getCurrentPosition());
+            telemetry.addData("Perp:  ", leftFront.getCurrentPosition());
         }
     }
 
@@ -578,14 +577,14 @@ public class PhaseTwoBot {
     }
 
     public class DroneLauncher {
-//        private Servo droneLaunch;
+        private Servo droneLaunch;
 
         public void init() {
-//            droneLaunch = hardwareMap.servo.get("droneLaunch");
+            droneLaunch = hardwareMap.servo.get("droneLaunch");
         }
 
         public void loop() {
-//            droneLaunch.setPosition(launcherPosition);
+            droneLaunch.setPosition(launcherPosition);
         }
 
         public void launchDrone() {
@@ -596,9 +595,9 @@ public class PhaseTwoBot {
             launcherPosition = launcherClosedPosition;
         }
 
-//        public Action stowLauncherArmAction() {
-//            return new InstantAction(() -> droneLaunch.setPosition(launcherClosedPosition));
-//        }
+        public Action stowLauncherArmAction() {
+            return new InstantAction(() -> droneLaunch.setPosition(launcherClosedPosition));
+        }
     }
 
     private Winch winch;
