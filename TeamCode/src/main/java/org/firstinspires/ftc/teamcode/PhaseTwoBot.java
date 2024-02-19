@@ -24,8 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 @Config
 public class PhaseTwoBot {
-    public static double armFollowerKp = 0.002;
-    public static double armFollowerKi = 0.000001;
+    public static double armFollowerKp = 0.000;
+    public static double armFollowerKi = 0.005;
+    public static int armFollowerErrorThreshold = 0;
+    public static int armFollowerErrorSumThreshold = 10;
+    public static double armFollowerErrorSumDecay = 0.65;
     public static boolean autoWrist = true;
     public static int gripperCloseTime = 350;
     public static int gripperOpenTime = 300;
@@ -90,7 +93,7 @@ public class PhaseTwoBot {
 //        private Servo wrist;
         private Timing.Timer gripperCloseTimer;
         private Timing.Timer gripperOpenTimer;
-        //        private TouchSensor touchSensor;  // Touch sensor Object
+        private TouchSensor touchSensor;  // Touch sensor Object
         private Motor.RunMode armRunMode = Motor.RunMode.RawPower;
 
         private int motorFollowerErrorSum = 0;
@@ -160,7 +163,7 @@ public class PhaseTwoBot {
             gripperCloseTimer = new Timing.Timer(gripperCloseTime, TimeUnit.MILLISECONDS);
             gripperOpenTimer = new Timing.Timer(gripperOpenTime, TimeUnit.MILLISECONDS);
 
-//            touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
+            touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
         }
 
         private void setArmRunMode(Motor.RunMode runMode) {
@@ -258,8 +261,22 @@ public class PhaseTwoBot {
 
                 int pos = armMotor.getCurrentPosition();
                 int error = pos - armMotor2.getCurrentPosition();
-                motorFollowerErrorSum += error;
+                if (Math.abs(error) < armFollowerErrorThreshold) {
+                    error = 0;
+                }
+                motorFollowerErrorSum = (int) (motorFollowerErrorSum * armFollowerErrorSumDecay) + error;
+                double windupLimit = 0.25 / armFollowerKi;
+                if (motorFollowerErrorSum > windupLimit) {
+                    motorFollowerErrorSum = (int) windupLimit;
+                } else if (motorFollowerErrorSum < -windupLimit) {
+                    motorFollowerErrorSum = (int) -windupLimit;
+                }
+                if (Math.abs(motorFollowerErrorSum) < armFollowerErrorSumThreshold) {
+                    motorFollowerErrorSum = 0;
+                }
+
                 telemetry.addData("arm motor error", error);
+                telemetry.addData("motor err int", motorFollowerErrorSum);
 
                 double armPower = armExpo * cubed + (1.0 - armExpo) * netTrigger;
 
@@ -277,11 +294,11 @@ public class PhaseTwoBot {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-//                if (touchSensor.isPressed()) {
-//                    armMotor.set(0);
-//                    armMotor.encoder.reset();
-//                    return false;
-//                }
+                if (touchSensor.isPressed()) {
+                    armMotor.set(0);
+                    armMotor.encoder.reset();
+                    return false;
+                }
 
                 if (isCanceled()) {
                     armMotor.set(0);
@@ -391,12 +408,12 @@ public class PhaseTwoBot {
                 }
 
 
-//                if (touchSensor.isPressed()) {
-//                    packet.put(stepName + "at limit", true);
-//                    armMotor.encoder.reset();
-//                } else {
-//                    packet.put(stepName + "at limit", false);
-//                }
+                if (touchSensor.isPressed()) {
+                    packet.put(stepName + "at limit", true);
+                    armMotor.encoder.reset();
+                } else {
+                    packet.put(stepName + "at limit", false);
+                }
 
                 packet.put(stepName + "arm pos", armMotor.getDistance());
 
@@ -482,7 +499,7 @@ public class PhaseTwoBot {
             telemetry.addData("arm: ", armMotor.encoder.getPosition());
             telemetry.addData("timer: ", gripperCloseTimer.elapsedTime());
 
-//            lowerLimit = touchSensor.isPressed();
+            lowerLimit = touchSensor.isPressed();
 
             if (armRunMode == Motor.RunMode.PositionControl) {
                 double armPower = armMotor.atTargetPosition() ||
