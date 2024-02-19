@@ -14,6 +14,10 @@ public class WormMotor extends Motor {
     private TelemetryPacket packet;
     private String stepName;
 
+    protected WormMotor() {
+        wormPositionController = null;
+    }
+
     public WormMotor(@NonNull HardwareMap hMap, String id, @NonNull GoBILDA gobildaType) {
         super(hMap, id, gobildaType);
         wormPositionController = new PIDController(0.001, 0.15, 0);
