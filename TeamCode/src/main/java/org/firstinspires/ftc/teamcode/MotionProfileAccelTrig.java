@@ -4,19 +4,17 @@ import java.util.function.Function;
 
 public class MotionProfileAccelTrig extends MotionProfile {
     private final double maxAccel;
-    private final double totalDistance;
-    private  double maxVelocity;
+    private final double maxVelocity;
 
-    private  double rampTime;
-    private  double cruiseTime;
-    private  double rampDistance;
+    private final double rampTime;
+    private final double cruiseTime;
+    private double rampDistance;
 
     public MotionProfileAccelTrig(double maxAccel, double maxVelocity, double totalDistance) {
         this.maxAccel = maxAccel;
-        this.totalDistance = totalDistance;
         //this.rampDistance = trigRamp2ndIntegral(rampTime, maxAccel, maxVelocity);
         double rampDistance = maxVelocity * maxVelocity / maxAccel;
-        if (totalDistance < (2*this.rampDistance)) {
+        if (totalDistance < (2 * this.rampDistance)) {
             maxVelocity = Math.sqrt(maxAccel * totalDistance / 2.0);
             rampDistance = maxVelocity * maxVelocity / maxAccel;
         }

@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 @Config
 public class PhaseTwoBot {
+    public static double armFollowerKp = 0.002;
+    public static double armFollowerKi = 0.000001;
     public static boolean autoWrist = true;
     public static int gripperCloseTime = 350;
     public static int gripperOpenTime = 300;
@@ -84,12 +86,14 @@ public class PhaseTwoBot {
     public class GripperArm {
         private WormMotor armMotor;
         private WormMotor armMotor2;
-//        private Servo gripper;
+        //        private Servo gripper;
 //        private Servo wrist;
         private Timing.Timer gripperCloseTimer;
         private Timing.Timer gripperOpenTimer;
-//        private TouchSensor touchSensor;  // Touch sensor Object
+        //        private TouchSensor touchSensor;  // Touch sensor Object
         private Motor.RunMode armRunMode = Motor.RunMode.RawPower;
+
+        private int motorFollowerErrorSum = 0;
 
         private boolean pullUpMode = false;
 
@@ -143,8 +147,8 @@ public class PhaseTwoBot {
         }
 
         public void init() {
-            armMotor = new WormMotor(hardwareMap, "leftArmMotor", Motor.GoBILDA.RPM_1150);
-            armMotor2 = new WormMotor(hardwareMap, "rightArmMotor", Motor.GoBILDA.RPM_1150);
+            armMotor = new WormMotor(hardwareMap, "rightArmMotor", Motor.GoBILDA.RPM_1150);
+            armMotor2 = new WormMotor(hardwareMap, "leftArmMotor", Motor.GoBILDA.RPM_1150);
 //            gripper = hardwareMap.servo.get("gripper");
 //            wrist = hardwareMap.servo.get("wrist");
 
@@ -252,8 +256,15 @@ public class PhaseTwoBot {
                 // this ensures that the next time it switches to positional, it will base it on current position
                 armSetpointIdx = -1;
 
-                armMotor.motor.setPower(armExpo * cubed + (1.0 - armExpo) * netTrigger);
-                armMotor2.motor.setPower(armExpo * cubed + (1.0 - armExpo) * netTrigger);
+                int pos = armMotor.getCurrentPosition();
+                int error = pos - armMotor2.getCurrentPosition();
+                motorFollowerErrorSum += error;
+                telemetry.addData("arm motor error", error);
+
+                double armPower = armExpo * cubed + (1.0 - armExpo) * netTrigger;
+
+                armMotor.motor.setPower(armPower);
+                armMotor2.motor.setPower(armPower + armFollowerKp * error + armFollowerKi * motorFollowerErrorSum);
             }
         }
 
@@ -474,8 +485,9 @@ public class PhaseTwoBot {
 //            lowerLimit = touchSensor.isPressed();
 
             if (armRunMode == Motor.RunMode.PositionControl) {
-                armMotor.set(armMotor.atTargetPosition() ||
-                        (lowerLimit && armMotor.getCurrentPosition() > armStops[armSetpointIdx]) ? 0 : 1.0);
+                double armPower = armMotor.atTargetPosition() ||
+                        (lowerLimit && armMotor.getCurrentPosition() > armStops[armSetpointIdx]) ? 0.0 : 1.0;
+                armMotor.set(armPower);
                 armMotor2.set(armMotor.get());
                 // if it's already at the lower limit and the arm is trying to go down, stop it
             }
