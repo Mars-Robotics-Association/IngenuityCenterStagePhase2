@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 @Config
 public class PhaseTwoBot {
+    public static int closeToZero = 550;
+    public static double noWakeSpeed = -0.35;
     public static boolean autoWrist = true;
     public static int gripperCloseTime = 350;
     public static int gripperOpenTime = 300;
@@ -36,19 +38,19 @@ public class PhaseTwoBot {
     public static double armExpo = 0.01;
     public static double wristPullUp = 0.35;
 
-    public static int armRearPickupStart = 8550;
+    public static int armRearPickupStart = 2800;
     public static double wristMaxInversion = 0.93;
     public static double wristRearPickUpStart = Math.min(0.93, wristMaxInversion);
     public static double wristRearPickUp = 0.83;
-    public static int armMax = 9625;
+    public static int armMax = 3200;
 
     public static int armDropOne = 130;
 
 
-    public static double positionCoefficient = .001;
-    public static double positionIntegralCoeff = 0.24;
-    public static double positionTolerance = 5;
-    public static double rampSlope = 3750;
+    public static double positionCoefficient = 0.00075;
+    public static double positionIntegralCoeff = 0.18;
+    public static double positionTolerance = 3;
+    public static double rampSlope = 1900;
 
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
@@ -96,20 +98,20 @@ public class PhaseTwoBot {
 
         private int armSetpointIdx = -1;
         //private int[] armStops = {0, 289, 1150, 1700, 6000};
-        private int armApex = 5100;
+        private int armApex = 1417;
 
 
-        private int armMaxFlat = 820;
+        private int armMaxFlat = 168;
         private double wristMaxFlat = 0.47;
-        public int armMinScore = 1150;
+        public int armMinScore = 239;
         private double wristMinScore = 0.65;
-        private int armMaxFrontScore = 1850;
+        private int armMaxFrontScore = 870;
         private double wristMaxFrontScore = 0.58;
-        private int armMaxReach = 6520;
+        private int armMaxReach = 1830;
         private double wristMaxReach = 0.4;
-        private int armTopBackScore = 6740;
+        private int armTopBackScore = 1985;
         private double wristTopBackScore = Math.min(0.93, wristMaxInversion);
-        private int armBottomBackScore = 7750;
+        private int armBottomBackScore = 2665;
         private double wristBottomBackScore = 0.8;
 
         private int[] armStops = {0, (armMinScore + armMaxFrontScore) / 2, (armTopBackScore + armBottomBackScore) / 2};
@@ -148,8 +150,8 @@ public class PhaseTwoBot {
             WormMotor wm1 = new WormMotor(hardwareMap, "leftArmMotor", Motor.GoBILDA.RPM_1150);
             armMotor = new WormGroup(telemetry, wm0, wm1);
 
-            wm0.setInverted(true);
-            wm1.setInverted(true);
+            wm0.setInverted(false);
+            wm1.setInverted(false);
 
 //            gripper = hardwareMap.servo.get("gripper");
 //            wrist = hardwareMap.servo.get("wrist");
@@ -258,8 +260,13 @@ public class PhaseTwoBot {
                 armSetpointIdx = -1;
 
                 double armPower = armExpo * cubed + (1.0 - armExpo) * netTrigger;
+                double pos = armMotor.getCurrentPosition();
 
-                armMotor.set(armPower);
+                armMotor.set(pos < closeToZero && armPower < 0.0 ?
+                        Math.max(armPower, noWakeSpeed) :
+                        pos > armMax - closeToZero ?
+                                Math.min(armPower, -noWakeSpeed) :
+                                armPower);
             }
         }
 
@@ -287,7 +294,7 @@ public class PhaseTwoBot {
                     if (armMovementAction != null) armMovementAction.cancel();
                     armMovementAction = this;
                     armMotor.setRunMode(Motor.RunMode.RawPower);
-                    armMotor.set(-0.3);
+                    armMotor.set(-0.375);
                     initialized = true;
                 }
 
@@ -393,7 +400,7 @@ public class PhaseTwoBot {
                     packet.put(stepName + "at limit", false);
                 }
 
-                packet.put(stepName + "arm pos", armMotor.getDistance());
+                packet.put(stepName + "arm pos", armMotor.getCurrentPosition());
 
                 if (armMotor.atTargetPosition()) {
                     packet.put(stepName + "at target", true);
@@ -479,7 +486,11 @@ public class PhaseTwoBot {
 
             lowerLimit = touchSensor.isPressed();
 
+            telemetry.addData("lower limit: ", lowerLimit);
+
             if (armRunMode == Motor.RunMode.PositionControl) {
+                armMotor.setPositionPI(positionCoefficient, positionIntegralCoeff);
+                armMotor.setPositionTolerance(positionTolerance);
                 double armPower = armMotor.atTargetPosition() ||
                         (lowerLimit && armMotor.getCurrentPosition() > armStops[armSetpointIdx]) ? 0.0 : 1.0;
                 armMotor.set(armPower);
