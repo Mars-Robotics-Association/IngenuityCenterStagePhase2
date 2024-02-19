@@ -149,7 +149,9 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
 
     @Override
     public void resetEncoder() {
-        group[0].resetEncoder();
+        for (WormMotor x : group) {
+            x.resetEncoder();
+        }
     }
 
     @Override
