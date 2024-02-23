@@ -125,6 +125,10 @@ public class PhaseTwoBot {
             return minY + slope * (x - minX);
         }
 
+        public int getArmPosition() {
+            return armMotor.getCurrentPosition();
+        }
+
         private double wristServoValue(int armTicks) {
             if (armTicks < armMaxFlat && gripperPosition == gripperClosedPosition && gripperCloseTimer.done()) {
                 return wristTuckedUp;

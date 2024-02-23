@@ -21,6 +21,11 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     public static int armFollowerErrorSumThreshold = 10;
     public static double armFollowerErrorSumDecay = 0.65;
 
+    public static double Ks = 1 / 126.45;
+    public static double Kv = 1 / 2782.0;
+    public static double maxVelocity = 2760;
+    public static  double maxAccel = 1000;
+
     private final WormMotor[] group;
 
     private final int[] motorFollowerErrorSum;

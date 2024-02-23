@@ -38,6 +38,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 @Config
 //@Disabled
 public abstract class PhaseTwoTeleop extends OpMode {
@@ -104,6 +107,9 @@ public abstract class PhaseTwoTeleop extends OpMode {
         runtime.reset();
     }
 
+    Queue<Double> timeQueue = new ArrayDeque<>();
+    Queue<Double> positionQueue = new ArrayDeque<>();
+    double maxRate = 0;
 
     /* ===========================================================
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -155,6 +161,20 @@ public abstract class PhaseTwoTeleop extends OpMode {
                     - payloadOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
 
             bot.gripperArm().moveArmManually(netTrigger);
+            telemetry.addData("Max arm rate", maxRate);
+        }
+
+        double currentTime = runtime.seconds();
+        double armPos = bot.gripperArm().getArmPosition();
+        timeQueue.offer(currentTime);
+        positionQueue.offer(armPos);
+        if (timeQueue.size() == 10) {
+            double oldTime = timeQueue.poll();
+            double oldPosition = positionQueue.poll();
+            double rate = Math.abs((armPos - oldPosition) / (currentTime - oldTime));
+            if (rate > maxRate) {
+                maxRate = rate;
+            }
         }
 
         bot.gripperArm().loop();
