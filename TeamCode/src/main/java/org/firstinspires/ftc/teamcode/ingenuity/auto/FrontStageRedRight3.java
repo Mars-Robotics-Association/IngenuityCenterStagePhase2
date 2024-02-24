@@ -35,7 +35,7 @@ public final class FrontStageRedRight3 extends LinearOpMode {
     public static double deliveryY = -35;
     public static double parkingX = 58;
     public static double parkingY = -6;
-    public static int backDelivery = 2250;
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 1200);
     public static double armDelay = 4.25;
     public static double wristDriving = 0.45;
     public static int armDriving = 1350;

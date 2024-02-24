@@ -46,7 +46,7 @@ public class PhaseTwoBot {
     public static double wristRearPickUp = 0.83;
     public static int armMax = 2900;
 
-    public static int armDropOne = 130;
+    public static int armDropOne = 50;
 
 
     public static double positionCoefficient = 0.00075;
