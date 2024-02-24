@@ -150,10 +150,10 @@ public abstract class PhaseTwoTeleop extends OpMode {
             toggleB.readValue();
         }
 
-        if (payloadOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+        if (bot.isArmEncoderReset() && payloadOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
             bot.gripperArm().lowerArmOneStop();
             lastBumper = "left";
-        } else if (payloadOp.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+        } else if (bot.isArmEncoderReset() && payloadOp.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             bot.gripperArm().raiseArmOneStop();
             lastBumper = "right";
         } else if (!payloadOp.isDown(GamepadKeys.Button.DPAD_RIGHT)) {

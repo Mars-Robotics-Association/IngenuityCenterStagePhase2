@@ -35,19 +35,14 @@ public final class PropDetectionTest extends LinearOpMode {
     public static int backDelivery = 2250;
 
     int propPosition ;
+    PropDetection propDetector ;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        PropDetection propDetector = new PropDetection(this);
+        propDetector = new PropDetection(this);
 
-
-<<<<<<< HEAD
-        PhaseTwoBot bot = new PhaseTwoBot(hardwareMap, telemetry);
+        PhaseTwoBot bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
-=======
-            PhaseTwoBot bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
-            TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
->>>>>>> 016c71264f874055bde17d6ab2423aef39e828be
 
         telemetry.addLine("Check 1") ;
         updateTelemetry(telemetry);
@@ -63,7 +58,6 @@ public final class PropDetectionTest extends LinearOpMode {
 
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(initX, initY, Math.toRadians(initAngle)));
-
 
         sleep(5000);
         propPosition = propDetector.propTfod();
