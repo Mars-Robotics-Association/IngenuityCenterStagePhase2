@@ -30,23 +30,23 @@ public class PhaseTwoBot {
     public static boolean autoWrist = true;
     public static int gripperCloseTime = 350;
     public static int gripperOpenTime = 300;
-    public static double wristFlatZero = 0.51;
-    public static double wristTuckedUp = 0.85;
+    public static double wristFlatZero = 0.27;
+    public static double wristTuckedUp = 0.75;
     public static double gripperOpenPosition = 0.55;
     public static double gripperHalfOpenPosition = .515;
     public static double gripperClosedPosition = .47;
-    public static double wristPosition = 0.5;
+    public static double wristPosition = 0.35;
     public static double gripperPosition = gripperOpenPosition;
-    public static double armExpo = 0.01;
-    public static double wristPullUp = 0.35;
+    public static double armExpo = 0.95;
+    public static double wristPullUp = 0.75;
 
-    public static int armRearPickupStart = 2800;
-    public static double wristMaxInversion = 0.93;
-    public static double wristRearPickUpStart = Math.min(0.93, wristMaxInversion);
-    public static double wristRearPickUp = 0.83;
+    public static int armRearPickupStart = 2580;
+    public static double wristMaxInversion = 0.75;
+    public static double wristRearPickUpStart = Math.min(0.75, wristMaxInversion);
+    public static double wristRearPickUp = 0.67;
     public static int armMax = 2900;
 
-    public static int armDropOne = 130;
+    public static int armDropOne = 50;
 
 
     public static double positionCoefficient = 0.00075;
@@ -91,8 +91,8 @@ public class PhaseTwoBot {
 
     public class GripperArm {
         private WormGroup armMotor;
-        //        private Servo gripper;
-//        private Servo wrist;
+        private Servo gripper;
+        private Servo wrist;
         private Timing.Timer gripperCloseTimer;
         private Timing.Timer gripperOpenTimer;
         private TouchSensor touchSensor;  // Touch sensor Object
@@ -107,20 +107,20 @@ public class PhaseTwoBot {
         private int armApex = 1417;
 
 
-        private int armMaxFlat = 168;
-        private double wristMaxFlat = 0.47;
-        public int armMinScore = 239;
-        private double wristMinScore = 0.65;
-        private int armMaxFrontScore = 870;
-        private double wristMaxFrontScore = 0.58;
+        private int armMaxFlat = 160;
+        private double wristMaxFlat = 0.26;
+        public int armMinScore = 279;
+        private double wristMinScore = 0.39;
+        private int armMaxFrontScore = 324;
+        private double wristMaxFrontScore = 0.36;
         private int armMaxReach = 1830;
         private double wristMaxReach = 0.4;
-        private int armTopBackScore = 1985;
-        private double wristTopBackScore = Math.min(0.93, wristMaxInversion);
-        private int armBottomBackScore = 2665;
-        private double wristBottomBackScore = 0.8;
+        private int armTopBackScore = 1900;
+        private double wristTopBackScore = Math.min(0.73, wristMaxInversion);
+        private int armBottomBackScore = 2409;
+        private double wristBottomBackScore = 0.57;
 
-        private int[] armStops = {0, (armMinScore + armMaxFrontScore) / 2, (armTopBackScore + armBottomBackScore) / 2};
+        private int[] armStops = {0, armMaxFlat*9/10, (armTopBackScore + armBottomBackScore) / 2};
 
         private boolean lowerLimit;
 
@@ -163,8 +163,8 @@ public class PhaseTwoBot {
             wm0.setInverted(false);
             wm1.setInverted(false);
 
-//            gripper = hardwareMap.servo.get("gripper");
-//            wrist = hardwareMap.servo.get("wrist");
+            gripper = hardwareMap.servo.get("gripper");
+            wrist = hardwareMap.servo.get("wrist");
 
 
             armMotor.setPositionPI(positionCoefficient, positionIntegralCoeff);
@@ -345,9 +345,9 @@ public class PhaseTwoBot {
             return moveArmToPositionAction(armStops[stop], stepName);
         }
 
-//        public Action applyAutoWristAction() {
-//            return new InstantAction(() -> wrist.setPosition(wristServoValue(armMotor.getCurrentPosition())));
-//        }
+        public Action applyAutoWristAction() {
+            return new InstantAction(() -> wrist.setPosition(wristServoValue(armMotor.getCurrentPosition())));
+        }
 
         private class MoveArmToPositionAction extends CancelableAction {
             private boolean initialized = false;
@@ -420,9 +420,9 @@ public class PhaseTwoBot {
 
                 boolean stillRunning = armMotor.moveArmToPosLoop(runtime.seconds());
                 packet.put(stepName + "in profile", stillRunning);
-//                if (autoWrist){
-//                    wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
-//                }
+                if (autoWrist) {
+                    wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
+                }
                 if (!stillRunning) {
                     armMovementAction = null;
                 }
@@ -485,7 +485,7 @@ public class PhaseTwoBot {
             if (wristPosition != pos) {
                 wristPosition = pos;
                 return new SequentialAction(
-//                        new InstantAction(() -> wrist.setPosition(pos)),
+                        new InstantAction(() -> wrist.setPosition(pos)),
                         new SleepAction(350 / 1000.0)
                 );
             } else {
@@ -507,10 +507,10 @@ public class PhaseTwoBot {
                 wristPosition = wristServoValue(armTicks);
             }
 
-//            gripper.setPosition(armTicks < armMaxFlat && gripperOpenTimer.isTimerOn() && !gripperOpenTimer.done()
-//                    ? gripperClosedPosition
-//                    : gripperPosition);
-//            wrist.setPosition(wristPosition);
+            gripper.setPosition(armTicks < armMaxFlat && gripperOpenTimer.isTimerOn() && !gripperOpenTimer.done()
+                    ? gripperClosedPosition
+                    : gripperPosition);
+            wrist.setPosition(wristPosition);
 
             telemetry.addData("arm: ", armMotor.getCurrentPosition());
             telemetry.addData("timer: ", gripperCloseTimer.elapsedTime());

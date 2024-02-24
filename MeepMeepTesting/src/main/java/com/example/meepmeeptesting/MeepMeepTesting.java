@@ -22,7 +22,7 @@ public class MeepMeepTesting {
     public static double deliveryY = 27;
     public static double parkingX = 58;
     public static double parkingY = 10;
-    public static int backDelivery = 2250;
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
 
     public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class MeepMeepTesting {
 //                        .afterTime(5.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                         .splineTo(new Vector2d(pushX + backOffXby, pushY + backOffYby), Math.toRadians(invPushAngle))
                         .splineTo(new Vector2d(-49, 49), Math.toRadians(180))
-                        .splineTo(new Vector2d(-57, pushY - 5), Math.toRadians(270))
+                        .splineTo(new Vector2d(-55, pushY - 5), Math.toRadians(270))
                         .splineTo(new Vector2d(-36, 11), Math.toRadians(0))
                         .splineTo(new Vector2d(18, 11), Math.toRadians(0))
                         .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))

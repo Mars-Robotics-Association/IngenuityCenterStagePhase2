@@ -32,7 +32,7 @@ public final class PropDetectionTest extends LinearOpMode {
     public static double deliveryY = 35;
     public static double parkingX = 58;
     public static double parkingY = 56;
-    public static int backDelivery = 2250;
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
     int propPosition ;
     PropDetection propDetector ;

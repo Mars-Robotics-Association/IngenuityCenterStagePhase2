@@ -33,7 +33,7 @@ public final class BackStageRedLeft3 extends LinearOpMode {
     public static double deliveryY = -27;
     public static double parkingX = 58;
     public static double parkingY = -56;
-    public static int backDelivery = 2250;
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
     @Override
     public void runOpMode() throws InterruptedException {
