@@ -18,17 +18,18 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     public static double armFollowerKp = 0.000;
     public static double armFollowerKi = 0.005;
     public static int armFollowerErrorThreshold = 0;
-    public static int armFollowerErrorSumThreshold = 10;
+    public static int armFollowerErrorSumThreshold = 15;
     public static double armFollowerErrorSumDecay = 0.65;
 
     // 902 @ 0.3
     // 2476 @ 1.0
     public static double Ks = 0;
     public static double Kv = 1.0 / 2476;
-    public static double Kp = 0;
-    public static double Ki = 0;
+    public static double Kp = 0.01;
+    public static double Ki = 0.0; // 0.000001;
     public static double maxVelocity = 2476;
-    public static double maxAccel = 10000;
+    public static double maxAccel = 9000;
+    public static int profilePosTolerance = 15;
 
     private final WormMotor[] group;
 
@@ -48,18 +49,24 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
 
     public void moveArmToPosInit(int targetPos, double currentSeconds) {
         setRunMode(RunMode.RawPower);
-        profileMapping = new MotionProfileMapping(maxAccel, maxVelocity, getCurrentPosition(), getVelocity(), targetPos, currentSeconds, Ks, Kv, Kp, Ki);
+        profileMapping = new MotionProfileMapping(telemetry, maxAccel, maxVelocity, getCurrentPosition(),
+                getVelocity(), targetPos, currentSeconds, Ks, Kv, Kp, Ki);
+        profileMapping.setTolerances(profilePosTolerance, 20);
     }
 
     public boolean moveArmToPosLoop(double currentSeconds) {
+        //telemetry.addData("inProfile", profileMapping.inProfile(currentSeconds));
+        //telemetry.addData("isSettled", profileMapping.isSettled(getCurrentPosition(), getVelocity()));
         if (profileMapping != null &&
                 (profileMapping.inProfile(currentSeconds) ||
                         !profileMapping.isSettled(getCurrentPosition(), getVelocity())
                 )
         ) {
             set(profileMapping.calculate(getCurrentPosition(), currentSeconds));
+            //telemetry.addData("target position", profileMapping.getTargetPosition());
             return true;
         } else {
+            set(0);
             return false;
         }
     }
@@ -67,6 +74,7 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     @Override
     public void set(double speed) {
         group[0].set(speed);
+        telemetry.addData("armPower[0]", speed);
 
         for (int i = 1; i < group.length; i++) {
             int error = group[0].getCurrentPosition() - group[i].getCurrentPosition();
@@ -92,6 +100,7 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
             double armPower = group[0].get();
 
             group[i].set(armPower + armFollowerKp * error + armFollowerKi * motorFollowerErrorSum[i]);
+            telemetry.addData("armPower[" + i + "]", group[i].get());
         }
     }
 
