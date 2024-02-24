@@ -64,6 +64,11 @@ public class MotionProfileMapping {
         return Math.abs(position - targetPosition) <= positionTolerance && Math.abs(velocity) <= velocityTolerance;
     }
 
+    public boolean isTimedOut(double currentSeconds, double slackTime) {
+        double elapsed = currentSeconds - startedSeconds;
+        return elapsed > (motionProfile.totalProfileTime() + slackTime);
+    }
+
     public boolean inProfile(double currentSeconds) {
         if (motionProfile == null) {
             return false;

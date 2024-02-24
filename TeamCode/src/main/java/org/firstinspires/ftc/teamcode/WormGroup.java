@@ -57,7 +57,7 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     public boolean moveArmToPosLoop(double currentSeconds) {
         //telemetry.addData("inProfile", profileMapping.inProfile(currentSeconds));
         //telemetry.addData("isSettled", profileMapping.isSettled(getCurrentPosition(), getVelocity()));
-        if (profileMapping != null &&
+        if (profileMapping != null && !profileMapping.isTimedOut(currentSeconds, 1.5) &&
                 (profileMapping.inProfile(currentSeconds) ||
                         !profileMapping.isSettled(getCurrentPosition(), getVelocity())
                 )
