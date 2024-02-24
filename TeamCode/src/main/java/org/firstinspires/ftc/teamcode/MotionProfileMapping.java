@@ -40,6 +40,7 @@ public class MotionProfileMapping {
     public double calculate(int position, double currentSeconds) {
         //telemetry.addData("planned distance", totalDistance);
         //telemetry.addData("starting velocity", startingVelocity);
+        double beforeTarget = (signum < 0 && position < targetPosition) || (position > targetPosition) ? 0.0 : 1.0;
         double time = currentSeconds - startedSeconds;
         double setPoint = signum * motionProfile.profilePosition(time) + startingPosition;
         telemetry.addData("expected profile time", motionProfile.totalProfileTime());
@@ -48,8 +49,8 @@ public class MotionProfileMapping {
         accumulator = (int) (accumulator * 0.65 + error);
         double v = signum * motionProfile.profileVelocity(time);
         telemetry.addData("motion profile velocity", v);
-        return Math.signum(v) * Ks +
-                Kv * v +
+        return beforeTarget * Math.signum(v) * Ks +
+                beforeTarget * Kv * v +
                 Kp * error +
                 Ki * accumulator;
     }
