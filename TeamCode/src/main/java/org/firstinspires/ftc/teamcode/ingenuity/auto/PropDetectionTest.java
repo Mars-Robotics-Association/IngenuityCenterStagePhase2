@@ -57,7 +57,6 @@ public final class PropDetectionTest extends LinearOpMode {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(initX, initY, Math.toRadians(initAngle)));
 
-        propPosition = propDetector.propTfod();
         updateTelemetry(telemetry);
 
         waitForStart();  // ======================================================================================
@@ -67,7 +66,7 @@ public final class PropDetectionTest extends LinearOpMode {
         updateTelemetry(telemetry);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(initX, 50), Math.toRadians(-90))
+                .splineTo(new Vector2d(initX, 55), Math.toRadians(-90))
                 .build());
 
 
