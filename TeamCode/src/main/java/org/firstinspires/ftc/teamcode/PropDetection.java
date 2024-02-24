@@ -179,7 +179,8 @@ public class PropDetection {
     public int propTfod() {
         // Reutn values: -1 = Left, 0 = Middle, 1 = Right
         int result = 0 ;  //Default t0 0 -> Middle
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        //List<Recognition> currentRecognitions = tfod.getRecognitions();
+        List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
         double highscore=0.75;
         double highx=310;
         myOpMode.telemetry.addData("# Objects Detected", currentRecognitions.size());
