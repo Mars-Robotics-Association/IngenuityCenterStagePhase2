@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
@@ -40,8 +41,13 @@ public final class PropDetectionTest extends LinearOpMode {
         PropDetection propDetector = new PropDetection(this);
 
 
+<<<<<<< HEAD
         PhaseTwoBot bot = new PhaseTwoBot(hardwareMap, telemetry);
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
+=======
+            PhaseTwoBot bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
+            TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
+>>>>>>> 016c71264f874055bde17d6ab2423aef39e828be
 
         telemetry.addLine("Check 1") ;
         updateTelemetry(telemetry);

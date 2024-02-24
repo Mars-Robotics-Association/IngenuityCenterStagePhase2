@@ -81,7 +81,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         toggleB = new ToggleButtonReader(payloadOp, GamepadKeys.Button.B);
         toggleStick = new ToggleButtonReader(driverOp, GamepadKeys.Button.LEFT_STICK_BUTTON);
 
-        bot = new PhaseTwoBot(hardwareMap, telemetry);
+        bot = new PhaseTwoBot(hardwareMap, telemetry, runtime);
         bot.gripperArm();
         bot.ftcLibMecanumDrive();
         bot.droneLauncher();
@@ -168,7 +168,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         double armPos = bot.gripperArm().getArmPosition();
         timeQueue.offer(currentTime);
         positionQueue.offer(armPos);
-        if (timeQueue.size() == 10) {
+        if (timeQueue.size() == 40) {
             double oldTime = timeQueue.poll();
             double oldPosition = positionQueue.poll();
             double rate = Math.abs((armPos - oldPosition) / (currentTime - oldTime));
