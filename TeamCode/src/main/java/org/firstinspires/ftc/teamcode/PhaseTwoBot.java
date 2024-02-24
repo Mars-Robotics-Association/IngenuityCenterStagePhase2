@@ -57,6 +57,8 @@ public class PhaseTwoBot {
     private final Telemetry telemetry;
     private final ElapsedTime runtime;
 
+    private boolean armEncoderWasReset = false;
+
     public PhaseTwoBot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -224,7 +226,7 @@ public class PhaseTwoBot {
             }
             if (this.armSetpointIdx < armStops.length - 1) {
                 armSetpointIdx += 1;
-                telemetry.addData("go to stop",armStops[armSetpointIdx]);
+                telemetry.addData("go to stop", armStops[armSetpointIdx]);
                 armMotor.setTargetPosition(armStops[armSetpointIdx]);
                 armMotor.moveArmToPosInit(armStops[armSetpointIdx], runtime.seconds());
             }
@@ -512,7 +514,11 @@ public class PhaseTwoBot {
 
             telemetry.addData("lower limit: ", lowerLimit);
 
-            if (getArmRunMode()== Motor.RunMode.PositionControl) {
+            if (!armEncoderWasReset) {
+                armEncoderWasReset = lowerLimit;
+            }
+
+            if (getArmRunMode() == Motor.RunMode.PositionControl) {
                 armMotor.moveArmToPosLoop(runtime.seconds());
             }
 
@@ -531,6 +537,10 @@ public class PhaseTwoBot {
                 armMotor.resetEncoder();
             }
         }
+    }
+
+    public boolean isArmEncoderReset() {
+        return armEncoderWasReset;
     }
 
     public static double boostSpeed = 1.0;
