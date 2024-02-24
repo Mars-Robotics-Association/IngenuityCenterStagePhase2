@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
+import org.firstinspires.ftc.teamcode.ThreeStateToggle;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -53,7 +54,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
 
     private GamepadEx driverOp;
     private GamepadEx payloadOp;
-    private ToggleButtonReader toggleX;
+    private ThreeStateToggle toggleX;
     private ToggleButtonReader toggleY;
     private ToggleButtonReader toggleStick;
     private ToggleButtonReader toggleB;
@@ -76,7 +77,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         // Initialize the gamepad
         driverOp = new GamepadEx(gamepad1);
         payloadOp = useSecondController ? new GamepadEx(gamepad2) : driverOp;
-        toggleX = new ToggleButtonReader(payloadOp, GamepadKeys.Button.X);
+        toggleX = new ThreeStateToggle(payloadOp, GamepadKeys.Button.X);
         toggleY = new ToggleButtonReader(payloadOp, GamepadKeys.Button.Y);
         toggleB = new ToggleButtonReader(payloadOp, GamepadKeys.Button.B);
         toggleStick = new ToggleButtonReader(driverOp, GamepadKeys.Button.LEFT_STICK_BUTTON);
@@ -129,8 +130,10 @@ public abstract class PhaseTwoTeleop extends OpMode {
         toggleStick.readValue();
 
         if (toggleX.stateJustChanged()) {
-            if (toggleX.getState()) {
+            if (toggleX.getState() == 0) {
                 bot.gripperArm().closeGripper();
+            } else if (toggleX.getState() == 1) {
+                bot.gripperArm().halfOpenGripper();
             } else {
                 bot.gripperArm().openGripper();
             }

@@ -32,8 +32,9 @@ public class PhaseTwoBot {
     public static int gripperOpenTime = 300;
     public static double wristFlatZero = 0.51;
     public static double wristTuckedUp = 0.85;
-    public static double gripperOpenPosition = 0.65;
-    public static double gripperClosedPosition = .44;
+    public static double gripperOpenPosition = 0.55;
+    public static double gripperHalfOpenPosition = .515;
+    public static double gripperClosedPosition = .47;
     public static double wristPosition = 0.5;
     public static double gripperPosition = gripperOpenPosition;
     public static double armExpo = 0.01;
@@ -192,9 +193,13 @@ public class PhaseTwoBot {
             gripperPosition = gripperClosedPosition;
         }
 
-        public void openGripper() {
+        public void halfOpenGripper() {
             gripperCloseTimer.pause();
             gripperOpenTimer.start();
+            gripperPosition = gripperHalfOpenPosition;
+        }
+
+        public void openGripper() {
             gripperPosition = gripperOpenPosition;
         }
 
