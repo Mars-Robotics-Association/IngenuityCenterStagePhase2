@@ -33,7 +33,7 @@ public final class FrontStageRedCenter3 extends LinearOpMode {
     public static double deliveryY = -26;
     public static double parkingX = 58;
     public static double parkingY = -4;
-    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 1200);
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
     public static double armDelay = 4.25;
     public static double wristDriving = 0.45;
     public static int armDriving = 1475;
@@ -59,11 +59,12 @@ public final class FrontStageRedCenter3 extends LinearOpMode {
                             bot.gripperArm().moveArmToPositionAction(armDriving, "", true),
                             bot.gripperArm().setWristPosition(wristDriving)))
                     .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                    .afterTime(0.85, bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne))
                     .setReversed(true)
                     .afterTime(armDelay, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                     .splineTo(new Vector2d(pushX, pushY - 8), Math.toRadians(invPushAngle))
                     .splineTo(new Vector2d(-48, -47), Math.toRadians(180))
-                    .splineTo(new Vector2d(-57, pushY - 8), Math.toRadians(initAngle))
+                    .splineTo(new Vector2d(-55, pushY - 8), Math.toRadians(initAngle))
                     .splineTo(new Vector2d(-36, centerLaneY), Math.toRadians(0))
                     .splineTo(new Vector2d(18, centerLaneY), Math.toRadians(0))
                     .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))

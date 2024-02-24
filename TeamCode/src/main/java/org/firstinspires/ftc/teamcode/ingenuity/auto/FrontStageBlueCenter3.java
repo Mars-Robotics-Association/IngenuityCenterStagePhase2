@@ -33,7 +33,7 @@ public final class FrontStageBlueCenter3 extends LinearOpMode {
     public static double deliveryY = 31;
     public static double parkingX = 58;
     public static double parkingY = 8;
-    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 1200);
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
     public static double armDelay = 4.25;
 
     @Override
@@ -55,11 +55,12 @@ public final class FrontStageBlueCenter3 extends LinearOpMode {
                     .stopAndAdd(new SleepAction(initPause))
                     .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
                     .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                    .afterTime(0.85, bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne))
                     .setReversed(true)
                     .afterTime(armDelay, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                     .splineTo(new Vector2d(pushX, pushY + 8), Math.toRadians(invPushAngle))
                     .splineTo(new Vector2d(-48, 47), Math.toRadians(180))
-                    .splineTo(new Vector2d(-57, pushY + 8), Math.toRadians(initAngle))
+                    .splineTo(new Vector2d(-55, pushY + 8), Math.toRadians(initAngle))
                     .splineTo(new Vector2d(-36, centerLaneY), Math.toRadians(0))
                     .splineTo(new Vector2d(18, centerLaneY), Math.toRadians(0))
                     .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
