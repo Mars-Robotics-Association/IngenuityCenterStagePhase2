@@ -176,7 +176,7 @@ public class PhaseTwoBot {
         private void setArmRunMode(Motor.RunMode runMode) {
             if (runMode != armRunMode) {
                 armRunMode = runMode;
-                armMotor.setRunMode(runMode);
+                //armMotor.setRunMode(runMode);
             }
         }
 
@@ -224,6 +224,7 @@ public class PhaseTwoBot {
             }
             if (this.armSetpointIdx < armStops.length - 1) {
                 armSetpointIdx += 1;
+                telemetry.addData("go to stop",armStops[armSetpointIdx]);
                 armMotor.setTargetPosition(armStops[armSetpointIdx]);
                 armMotor.moveArmToPosInit(armStops[armSetpointIdx], runtime.seconds());
             }
@@ -383,7 +384,7 @@ public class PhaseTwoBot {
                     packet.put(stepName + "initial position", armStart);
                     this.rampTime = Math.abs(armStart - targetPos) / rampSlope;
                     armMotor.setTelemetry(packet, stepName);
-                    //armMotor.setRunMode(Motor.RunMode.PositionControl);
+                    setArmRunMode(Motor.RunMode.PositionControl);
                     packet.put(stepName + "target pos", targetPos);
                     beginTs = now();
                     armMotor.moveArmToPosInit(Math.min(armMax, Math.max(0, targetPos)), runtime.seconds());
@@ -511,7 +512,9 @@ public class PhaseTwoBot {
 
             telemetry.addData("lower limit: ", lowerLimit);
 
-            armMotor.moveArmToPosLoop(runtime.seconds());
+            if (getArmRunMode()== Motor.RunMode.PositionControl) {
+                armMotor.moveArmToPosLoop(runtime.seconds());
+            }
 
             /*
             if (armRunMode == Motor.RunMode.PositionControl) {
