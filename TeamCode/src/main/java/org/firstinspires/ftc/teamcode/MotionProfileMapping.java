@@ -18,6 +18,10 @@ public class MotionProfileMapping {
     private int accumulator;
 
     MotionProfileMapping(Telemetry telemetry, double maxAccel, double maxVelocity, int currentPosition, double currentVelocity, int targetPosition, double currentSeconds, double Ks, double Kv, double Kp, double Ki) {
+        if (targetPosition > PhaseTwoBot.armMax || targetPosition < 0) {
+            throw new IllegalArgumentException("target position out of permitted range");
+        }
+
         this.signum = Math.signum(targetPosition - currentPosition);
         totalDistance = Math.abs(targetPosition - currentPosition);
         startingVelocity = signum * currentVelocity;
