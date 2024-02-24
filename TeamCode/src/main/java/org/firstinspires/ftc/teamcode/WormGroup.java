@@ -21,12 +21,14 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     public static int armFollowerErrorSumThreshold = 10;
     public static double armFollowerErrorSumDecay = 0.65;
 
-    public static double Ks = 1 / 126.45;
-    public static double Kv = 1 / 2782.0;
+    // 902 @ 0.3
+    // 2476 @ 1.0
+    public static double Ks = 0;
+    public static double Kv = 1.0 / 2476;
     public static double Kp = 0;
     public static double Ki = 0;
-    public static double maxVelocity = 2760;
-    public static double maxAccel = 1000;
+    public static double maxVelocity = 2476;
+    public static double maxAccel = 10000;
 
     private final WormMotor[] group;
 
@@ -50,7 +52,11 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     }
 
     public boolean moveArmToPosLoop(double currentSeconds) {
-        if (profileMapping.inProfile(currentSeconds) || !profileMapping.isSettled(getCurrentPosition(), getVelocity())) {
+        if (profileMapping != null &&
+                (profileMapping.inProfile(currentSeconds) ||
+                        !profileMapping.isSettled(getCurrentPosition(), getVelocity())
+                )
+        ) {
             set(profileMapping.calculate(getCurrentPosition(), currentSeconds));
             return true;
         } else {

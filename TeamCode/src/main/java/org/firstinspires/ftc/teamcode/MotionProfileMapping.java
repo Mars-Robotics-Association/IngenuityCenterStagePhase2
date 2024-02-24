@@ -43,6 +43,10 @@ public class MotionProfileMapping {
     }
 
     public boolean inProfile(double currentSeconds) {
-        return (currentSeconds - startedSeconds) <= motionProfile.totalProfileTime();
+        if (motionProfile == null) {
+            return false;
+        } else {
+            return motionProfile.insideProfile(currentSeconds);
+        }
     }
 }

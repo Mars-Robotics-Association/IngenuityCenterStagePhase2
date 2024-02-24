@@ -43,7 +43,7 @@ public class PhaseTwoBot {
     public static double wristMaxInversion = 0.93;
     public static double wristRearPickUpStart = Math.min(0.93, wristMaxInversion);
     public static double wristRearPickUp = 0.83;
-    public static int armMax = 3200;
+    public static int armMax = 2900;
 
     public static int armDropOne = 130;
 
