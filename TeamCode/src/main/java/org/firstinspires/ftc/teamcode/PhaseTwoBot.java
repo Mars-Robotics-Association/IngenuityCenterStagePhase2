@@ -16,6 +16,7 @@ import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -54,10 +55,12 @@ public class PhaseTwoBot {
 
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
+    private final ElapsedTime runtime;
 
-    public PhaseTwoBot(HardwareMap hardwareMap, Telemetry telemetry) {
+    public PhaseTwoBot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
+        this.runtime = runtime;
     }
 
     public Action AutonomousInitActions() {
@@ -84,7 +87,7 @@ public class PhaseTwoBot {
 
 
     public class GripperArm {
-        private WormMotor armMotor;
+        private WormGroup armMotor;
         //        private Servo gripper;
 //        private Servo wrist;
         private Timing.Timer gripperCloseTimer;
@@ -222,6 +225,7 @@ public class PhaseTwoBot {
             if (this.armSetpointIdx < armStops.length - 1) {
                 armSetpointIdx += 1;
                 armMotor.setTargetPosition(armStops[armSetpointIdx]);
+                armMotor.moveArmToPosInit(armStops[armSetpointIdx], runtime.seconds());
             }
         }
 
@@ -232,6 +236,7 @@ public class PhaseTwoBot {
             if (armSetpointIdx > 0) {
                 armSetpointIdx -= 1;
                 armMotor.setTargetPosition(armStops[armSetpointIdx]);
+                armMotor.moveArmToPosInit(armStops[armSetpointIdx], runtime.seconds());
             }
         }
 
@@ -378,23 +383,24 @@ public class PhaseTwoBot {
                     packet.put(stepName + "initial position", armStart);
                     this.rampTime = Math.abs(armStart - targetPos) / rampSlope;
                     armMotor.setTelemetry(packet, stepName);
-                    armMotor.setRunMode(Motor.RunMode.PositionControl);
+                    //armMotor.setRunMode(Motor.RunMode.PositionControl);
                     packet.put(stepName + "target pos", targetPos);
                     beginTs = now();
+                    armMotor.moveArmToPosInit(Math.min(armMax, Math.max(0, targetPos)), runtime.seconds());
                     initialized = true;
                 }
 
 
-                double elapsed = now() - beginTs;
-                rampTarget = elapsed >= rampTime
-                        ? targetPos
-                        : armStart + (targetPos < armStart ? -1 : 1) * (125 + (int) (elapsed * rampSlope));
-
-                packet.put(stepName + "rampTarget", rampTarget);
-                if (!rampComplete) {
-                    rampComplete = rampTarget == targetPos;
-                    armMotor.setTargetPosition(rampTarget);
-                }
+//                double elapsed = now() - beginTs;
+//                rampTarget = elapsed >= rampTime
+//                        ? targetPos
+//                        : armStart + (targetPos < armStart ? -1 : 1) * (125 + (int) (elapsed * rampSlope));
+//
+//                packet.put(stepName + "rampTarget", rampTarget);
+//                if (!rampComplete) {
+//                    rampComplete = rampTarget == targetPos;
+//                    armMotor.setTargetPosition(rampTarget);
+//                }
 
 
                 if (touchSensor.isPressed()) {
@@ -404,8 +410,20 @@ public class PhaseTwoBot {
                     packet.put(stepName + "at limit", false);
                 }
 
-                packet.put(stepName + "arm pos", armMotor.getCurrentPosition());
+                boolean stillRunning = armMotor.moveArmToPosLoop(runtime.seconds());
+                packet.put(stepName + "in profile", stillRunning);
+//                if (autoWrist){
+//                    wrist.setPosition(wristServoValue(armMotor.getCurrentPosition()));
+//                }
+                if (!stillRunning) {
+                    armMovementAction = null;
+                }
+                return stillRunning;
 
+
+                //packet.put(stepName + "arm pos", armMotor.getCurrentPosition());
+
+                /*
                 if (armMotor.atTargetPosition()) {
                     packet.put(stepName + "at target", true);
                     armMotor.set(0.0);
@@ -422,6 +440,7 @@ public class PhaseTwoBot {
                     }
                     return true;
                 }
+                 */
             }
 
             public MoveArmToPositionAction(int targetPos, String stepName, boolean autoWrist) {
@@ -492,6 +511,9 @@ public class PhaseTwoBot {
 
             telemetry.addData("lower limit: ", lowerLimit);
 
+            armMotor.moveArmToPosLoop(runtime.seconds());
+
+            /*
             if (armRunMode == Motor.RunMode.PositionControl) {
                 armMotor.setPositionPI(positionCoefficient, positionIntegralCoeff);
                 armMotor.setPositionTolerance(positionTolerance);
@@ -500,6 +522,7 @@ public class PhaseTwoBot {
                 armMotor.set(armPower);
                 // if it's already at the lower limit and the arm is trying to go down, stop it
             }
+             */
 
             if (lowerLimit) {
                 armMotor.resetEncoder();

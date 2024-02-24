@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -23,7 +24,7 @@ public class TestArmMove extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
-            bot = new PhaseTwoBot(hardwareMap, telemetry);
+            bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
 
             Actions.runBlocking(bot.AutonomousInitActions());
 

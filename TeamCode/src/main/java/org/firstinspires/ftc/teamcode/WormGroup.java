@@ -23,13 +23,17 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
 
     public static double Ks = 1 / 126.45;
     public static double Kv = 1 / 2782.0;
+    public static double Kp = 0;
+    public static double Ki = 0;
     public static double maxVelocity = 2760;
-    public static  double maxAccel = 1000;
+    public static double maxAccel = 1000;
 
     private final WormMotor[] group;
 
     private final int[] motorFollowerErrorSum;
     private final Telemetry telemetry;
+
+    private MotionProfileMapping profileMapping = null;
 
 
     public WormGroup(Telemetry telemetry, @NonNull WormMotor leader, WormMotor... followers) {
@@ -38,6 +42,20 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
         System.arraycopy(followers, 0, group, 1, followers.length);
         motorFollowerErrorSum = new int[followers.length + 1];
         this.telemetry = telemetry;
+    }
+
+    public void moveArmToPosInit(int targetPos, double currentSeconds) {
+        setRunMode(RunMode.RawPower);
+        profileMapping = new MotionProfileMapping(maxAccel, maxVelocity, getCurrentPosition(), getVelocity(), targetPos, currentSeconds, Ks, Kv, Kp, Ki);
+    }
+
+    public boolean moveArmToPosLoop(double currentSeconds) {
+        if (profileMapping.inProfile(currentSeconds) || !profileMapping.isSettled(getCurrentPosition(), getVelocity())) {
+            set(profileMapping.calculate(getCurrentPosition(), currentSeconds));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
