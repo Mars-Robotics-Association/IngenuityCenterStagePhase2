@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.TimeoutAction;
 import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
-public final class BackStageBlueCenterPath  {
+public final class BackStageBlueCenterPath extends AutoPath {
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
@@ -47,6 +47,7 @@ public final class BackStageBlueCenterPath  {
     }
 
     // Run this after Start ==================================================
+    @Override
     public void runAutoPath() {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
 

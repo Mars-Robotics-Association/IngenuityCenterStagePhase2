@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.TimeoutAction;
 
 @Config
-public final class BackStageBlueRightPath {
+public final class BackStageBlueRightPath extends AutoPath {
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
@@ -42,6 +42,7 @@ public final class BackStageBlueRightPath {
     }
 
     // Run this after Start ==================================================
+    @Override
     public void runAutoPath() {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
 

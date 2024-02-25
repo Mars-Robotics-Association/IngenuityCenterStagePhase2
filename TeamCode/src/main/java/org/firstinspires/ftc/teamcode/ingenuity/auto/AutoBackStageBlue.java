@@ -15,12 +15,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueRightPath;
 
 @Config
 @Autonomous(name = "BackStageBlueAuto", group = "Auto 3.0 development")
 public final class AutoBackStageBlue extends LinearOpMode {
-    BackStageBlueCenterPath autonomousPath ;
+    AutoPath autonomousPath ;
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
@@ -56,15 +59,13 @@ public final class AutoBackStageBlue extends LinearOpMode {
                 autonomousPath = new BackStageBlueCenterPath(this, bot, drive) ;
                 break ;
             case 1: // Right
-
+                autonomousPath = new BackStageBlueRightPath(this, bot, drive) ;
                 break ;
             default: // Left
-
+                autonomousPath = new BackStageBlueLeftPath(this, bot, drive) ;
                 break ;
         }
-
-        autonomousPath = new BackStageBlueCenterPath(this, bot, drive) ;
-
+        
         if (opModeIsActive()) autonomousPath.runAutoPath();
     }
 }
