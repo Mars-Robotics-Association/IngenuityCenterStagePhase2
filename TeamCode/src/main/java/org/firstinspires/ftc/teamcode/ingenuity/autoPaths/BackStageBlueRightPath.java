@@ -47,7 +47,7 @@ public final class BackStageBlueRightPath extends AutoPath {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(initX, initY - 8), Math.toRadians(initAngle))
+                //.splineTo(new Vector2d(initX, initY - 8), Math.toRadians(initAngle))
                 .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
                 .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
                 .setReversed(true)
