@@ -396,7 +396,7 @@ public class PhaseTwoBot {
                     setArmRunMode(Motor.RunMode.PositionControl);
                     packet.put(stepName + "target pos", targetPos);
                     beginTs = now();
-                    armMotor.moveArmToPosInit(Math.min(armMax, Math.max(0, targetPos)), runtime.seconds());
+                    armMotor.moveArmToPosInit(Math.min(armMax, Math.max(0, targetPos)), runtime.seconds(), WormGroup.maxAccel / 2.0);
                     initialized = true;
                 }
 
