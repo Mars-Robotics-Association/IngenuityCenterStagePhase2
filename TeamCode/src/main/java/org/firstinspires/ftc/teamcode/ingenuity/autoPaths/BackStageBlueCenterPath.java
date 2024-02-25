@@ -54,16 +54,6 @@ public final class BackStageBlueCenterPath extends AutoPath {
 
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-<<<<<<< HEAD
-                .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
-                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle), mediumSpeed)
-                .setReversed(true)
-                .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(new Vector2d(11, 33), Math.toRadians(invPushAngle), mediumSpeed)
-                .splineTo(new Vector2d(26, 42), Math.toRadians(0), mediumSpeed)
-                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0), mediumSpeed)
-                .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
-=======
 //                .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne))
 //                .splineTo(new Vector2d(pushX + 4.5, pushY), Math.toRadians(pushAngle + 20))
 //                .setReversed(true)
@@ -77,7 +67,6 @@ public final class BackStageBlueCenterPath extends AutoPath {
                 .splineTo(new Vector2d(26, 42), Math.toRadians(0))
                 .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
                 .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0))
->>>>>>> b52b64ed203d7da75ad7a004c6c134fc8ffd424f
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
                         bot.gripperArm().gripperOpenAction(),
