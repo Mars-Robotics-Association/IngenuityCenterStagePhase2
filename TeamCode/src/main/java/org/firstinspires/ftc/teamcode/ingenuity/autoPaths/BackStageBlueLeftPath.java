@@ -17,8 +17,8 @@ public final class BackStageBlueLeftPath extends AutoPath {
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
-    public static double pushX = initX + 9;
-    public static double pushY = initY - 25;
+    public static double pushX = initX + 10;
+    public static double pushY = initY - 23;
     public static double pushAngle = initAngle + 30;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
     public static double backoffDistance = 4;

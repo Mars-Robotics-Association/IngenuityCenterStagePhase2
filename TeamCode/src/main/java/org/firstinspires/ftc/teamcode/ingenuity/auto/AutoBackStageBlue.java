@@ -48,7 +48,7 @@ public final class AutoBackStageBlue extends LinearOpMode {
         waitForStart(); // ========================================================================
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(initX, 55), Math.toRadians(-90))
+                .splineTo(new Vector2d(initX, 52), Math.toRadians(-90))
                 .build());
         sleep(5000);  // TODO: Lower this for Backstage
         propPosition = propDetector.propTfod();
@@ -65,7 +65,7 @@ public final class AutoBackStageBlue extends LinearOpMode {
                 autonomousPath = new BackStageBlueLeftPath(this, bot, drive) ;
                 break ;
         }
-        
+
         if (opModeIsActive()) autonomousPath.runAutoPath();
     }
 }

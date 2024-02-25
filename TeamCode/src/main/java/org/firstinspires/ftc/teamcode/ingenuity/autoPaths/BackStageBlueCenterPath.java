@@ -25,7 +25,7 @@ public final class BackStageBlueCenterPath extends AutoPath {
     public static double initY = 61;
     public static double initAngle = 270;
     public static double pushX = initX;
-    public static double pushY = initY - 35.5;
+    public static double pushY = initY - 33.5;
     public static double pushAngle = initAngle;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
     public static double deliveryX = 48;
@@ -50,6 +50,8 @@ public final class BackStageBlueCenterPath extends AutoPath {
     @Override
     public void runAutoPath() {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
+        TranslationalVelConstraint mediumSpeed = new TranslationalVelConstraint(25);
+
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
