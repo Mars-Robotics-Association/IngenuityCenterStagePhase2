@@ -14,21 +14,20 @@ import org.firstinspires.ftc.teamcode.TimeoutAction;
 
 @Config
 public final class BackStageRedLeftPath extends AutoPath {
-    public static double initX = 12;
-    public static double initY = 61;
-    public static double initAngle = 270;
-    public static double pushX = initX + 10;
-    public static double pushY = initY - 23;
-    public static double pushAngle = initAngle + 30;
-    public static double invPushAngle = ((int) pushAngle + 180) % 360;
-    public static double backoffDistance = 4;
-    public static double backOffXby = Math.sin(Math.toRadians(invPushAngle - 90)) * backoffDistance;
-    public static double backOffYby = Math.cos(Math.toRadians(invPushAngle - 90)) * backoffDistance;
-    public static double deliveryX = 48;
-    public static double preDeliveryX = deliveryX - 6.5;
-    public static double deliveryY = 41;
+    public static double initX = 11;
+    public static double initY = -61;
+    public static double initAngle = 90;
+    public static double pushX = initX - 8.5;
+    public static double pushY = initY + 26;
+    public static double pushAngle = initAngle + 40;
+    public static double invPushAngle = ((int) pushAngle + 180 + 10) % 360;
+    public static double backOffXby = 4.5;
+    public static double backOffYby = 4.5;
+    public static double deliveryX = 49;
+    public static double preDeliveryX = deliveryX - 14;
+    public static double deliveryY = -27;
     public static double parkingX = 58;
-    public static double parkingY = 56;
+    public static double parkingY = -56;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
     public PhaseTwoBot bot ;
@@ -46,15 +45,17 @@ public final class BackStageRedLeftPath extends AutoPath {
     @Override
     public void runAutoPath() {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
+        TranslationalVelConstraint mediumSpeed = new TranslationalVelConstraint(25);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
-                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle), mediumSpeed)
+                .stopAndAdd(new SequentialAction(bot.gripperArm().gripperHalfOpenAction(),
+                        bot.gripperArm().moveArmToStopAction(1, true)))
                 .setReversed(true)
                 .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(new Vector2d(pushX - backOffXby, pushY + backOffYby), Math.toRadians(invPushAngle))
-                .splineTo(new Vector2d(26, 49), Math.toRadians(0))
-                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
+                .splineTo(new Vector2d(pushX + backOffXby, pushY - backOffYby), Math.toRadians(invPushAngle), mediumSpeed)
+                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0), mediumSpeed)
                 .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),

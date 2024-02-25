@@ -46,20 +46,21 @@ public final class FrontStageBlueCenterPath extends AutoPath {
     @Override
     public void runAutoPath() {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
+        TranslationalVelConstraint mediumSpeed = new TranslationalVelConstraint(25);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .stopAndAdd(new SleepAction(initPause))
                 .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
-                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle), mediumSpeed)
                 .afterTime(0.85, bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne))
                 .setReversed(true)
                 .afterTime(armDelay, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(new Vector2d(pushX, pushY + 8), Math.toRadians(invPushAngle))
-                .splineTo(new Vector2d(-48, 47), Math.toRadians(180))
-                .splineTo(new Vector2d(-55, pushY + 8), Math.toRadians(initAngle))
-                .splineTo(new Vector2d(-36, centerLaneY), Math.toRadians(0))
-                .splineTo(new Vector2d(18, centerLaneY), Math.toRadians(0))
-                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
+                .splineTo(new Vector2d(pushX, pushY + 8), Math.toRadians(invPushAngle), mediumSpeed)
+                .splineTo(new Vector2d(-48, 47), Math.toRadians(180), mediumSpeed)
+                .splineTo(new Vector2d(-55, pushY + 8), Math.toRadians(initAngle), mediumSpeed)
+                .splineTo(new Vector2d(-36, centerLaneY), Math.toRadians(0), mediumSpeed)
+                .splineTo(new Vector2d(18, centerLaneY), Math.toRadians(0), mediumSpeed)
+                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0), slow)
                 .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),

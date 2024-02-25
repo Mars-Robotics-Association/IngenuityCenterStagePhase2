@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
 @Autonomous(name = "left 3 front stage red", group = "Auto 3.0 development")
+@Disabled
 public final class FrontStageRedLeft3 extends LinearOpMode {
     public static double initPause = 5.0;
     public static double initX = -36;

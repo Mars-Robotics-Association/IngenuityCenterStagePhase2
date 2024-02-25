@@ -45,15 +45,18 @@ public final class BackStageBlueRightPath extends AutoPath {
     @Override
     public void runAutoPath() {
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
+        TranslationalVelConstraint mediumSpeed = new TranslationalVelConstraint(25);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 //.splineTo(new Vector2d(initX, initY - 8), Math.toRadians(initAngle))
                 .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
-                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle), mediumSpeed)
+                .stopAndAdd(new SequentialAction(bot.gripperArm().gripperHalfOpenAction(),
+                        bot.gripperArm().moveArmToStopAction(1, true)))
                 .setReversed(true)
                 .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(new Vector2d(pushX + backOffXby, pushY + backOffYby), Math.toRadians(invPushAngle))
-                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
+                .splineTo(new Vector2d(pushX + backOffXby, pushY + backOffYby), Math.toRadians(invPushAngle), mediumSpeed)
+                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0), mediumSpeed)
                 .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),

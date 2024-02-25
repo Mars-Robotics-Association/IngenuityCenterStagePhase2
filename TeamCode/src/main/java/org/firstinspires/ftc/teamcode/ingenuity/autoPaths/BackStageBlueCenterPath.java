@@ -24,7 +24,7 @@ public final class BackStageBlueCenterPath extends AutoPath {
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
-    public static double pushX = initX + 3.5;
+    public static double pushX = initX + 2.5;
     public static double pushY = initY - 29;
     public static double pushAngle = initAngle + 20;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
@@ -59,14 +59,15 @@ public final class BackStageBlueCenterPath extends AutoPath {
 //                .setReversed(true)
 //                .splineTo(new Vector2d(initX, initY - 8), Math.toRadians(initAngle - 180))
 //                .setReversed(false)
-                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle), mediumSpeed)
                 .stopAndAdd(new SequentialAction(bot.gripperArm().gripperHalfOpenAction(),
                         bot.gripperArm().moveArmToStopAction(1, true)))
+
                 .setReversed(true)
                 .afterTime(0.5, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(new Vector2d(26, 42), Math.toRadians(0))
-                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
-                .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0))
+                .splineTo(new Vector2d(26, 42), Math.toRadians(0), mediumSpeed)
+                .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0), mediumSpeed)
+                .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), mediumSpeed)
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
                         bot.gripperArm().gripperOpenAction(),
@@ -85,4 +86,13 @@ public final class BackStageBlueCenterPath extends AutoPath {
 
                 .build());
     }
+
+    public void waitForTime(double time) {
+        double startTime = opMode.getRuntime() ;
+        while (IsTimeUp(startTime,time)){
+        }
+    }
+    public boolean IsTimeUp(double startTime, double runTime) { return opMode.getRuntime()<startTime+runTime ; } // From Owen
+
+
 }

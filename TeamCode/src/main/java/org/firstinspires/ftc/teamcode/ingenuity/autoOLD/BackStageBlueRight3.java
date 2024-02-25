@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
 @Autonomous(name = "right 3 back stage blue", group = "Auto 3.0 development")
+@Disabled
 public final class BackStageBlueRight3 extends LinearOpMode {
     public static double initX = 12;
     public static double initY = 61;

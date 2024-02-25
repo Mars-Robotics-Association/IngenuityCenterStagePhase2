@@ -8,8 +8,6 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -19,12 +17,15 @@ import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueRightPath;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.FrontStageBlueCenterPath;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.FrontStageBlueLeftPath;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.FrontStageBlueRightPath;
 
 @Config
-@Autonomous(name = "BackStageBlueAuto", group = "Auto 3.0 development")
-public final class AutoBackStageBlue extends LinearOpMode {
+@Autonomous(name = "FrontStageBlueAuto", group = "Auto 3.0 development")
+public final class AutoFrontStageBlue extends LinearOpMode {
     AutoPath autonomousPath;
-    public static double initX = 12;
+    public static double initX = -36;
     public static double initY = 61;
     public static double initAngle = 270;
 
@@ -58,13 +59,13 @@ public final class AutoBackStageBlue extends LinearOpMode {
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
         switch (propPosition) {
             case 0: // Middle
-                autonomousPath = new BackStageBlueCenterPath(this, bot, drive);
+                autonomousPath = new FrontStageBlueCenterPath(this, bot, drive);
                 break;
             case 1: // Right
-                autonomousPath = new BackStageBlueRightPath(this, bot, drive);
+                autonomousPath = new FrontStageBlueRightPath(this, bot, drive);
                 break;
             default: // Left
-                autonomousPath = new BackStageBlueLeftPath(this, bot, drive);
+                autonomousPath = new FrontStageBlueLeftPath(this, bot, drive);
                 break;
         }
 
