@@ -37,8 +37,7 @@ public final class AutoBackStageBlue extends LinearOpMode {
         bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
         Actions.runBlocking(new SequentialAction(
-                bot.AutonomousInitActions(),
-                bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne)
+                bot.AutonomousInitActions()
         ));
         drive = new MecanumDrive(hardwareMap, new Pose2d(initX, initY, Math.toRadians(initAngle)));
 
@@ -46,6 +45,7 @@ public final class AutoBackStageBlue extends LinearOpMode {
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .splineTo(new Vector2d(initX, 55), Math.toRadians(-90))
+                        .afterTime(0,bot.gripperArm().setWristFlatZero())
                 .build());
         sleep(5000);  // TODO: Lower this for Backstage
         propPosition = propDetector.propTfod();

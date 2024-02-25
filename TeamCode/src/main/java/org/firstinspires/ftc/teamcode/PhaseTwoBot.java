@@ -73,8 +73,7 @@ public class PhaseTwoBot {
                 gripperArm().gripperCloseAction(),
                 new SleepAction(0.3),
                 gripperArm().setWristTuckedUp(),
-                droneLauncher().stowLauncherArmAction(),
-                gripperArm().lowerArmToLimit()
+                droneLauncher().stowLauncherArmAction()
         );
     }
 
@@ -477,6 +476,10 @@ public class PhaseTwoBot {
 
         public Action gripperCloseAction() {
             return moveGripperAction(gripperClosedPosition, gripperCloseTime);
+        }
+
+        public Action gripperHalfOpenAction() {
+            return moveGripperAction(gripperHalfOpenPosition, wristLowerTime);
         }
 
         public Action gripperOpenAction() {
