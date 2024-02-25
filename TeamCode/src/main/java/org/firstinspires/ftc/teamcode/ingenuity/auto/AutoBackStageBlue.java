@@ -51,7 +51,7 @@ public final class AutoBackStageBlue extends LinearOpMode {
                 .splineTo(new Vector2d(initX, 53), Math.toRadians(-90))
                 .afterTime(0, bot.gripperArm().setWristFlatZero())
                 .build());
-        sleep(5000);  // TODO: Lower this for Backstage
+        sleep(1000);  // TODO: Lower this for Backstage
         propPosition = propDetector.propTfod();
         updateTelemetry(telemetry);
 
