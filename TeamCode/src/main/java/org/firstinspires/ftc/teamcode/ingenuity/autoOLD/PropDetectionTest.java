@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.ingenuity.auto;
+package org.firstinspires.ftc.teamcode.ingenuity.autoOLD;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -14,8 +13,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
-import org.firstinspires.ftc.teamcode.TimeoutAction;
-import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
 @Autonomous(name = "Prop Detection Test", group = "Auto 3.0 development")
@@ -57,7 +54,6 @@ public final class PropDetectionTest extends LinearOpMode {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(initX, initY, Math.toRadians(initAngle)));
 
-        propPosition = propDetector.propTfod();
         updateTelemetry(telemetry);
 
         waitForStart();  // ======================================================================================
@@ -67,7 +63,7 @@ public final class PropDetectionTest extends LinearOpMode {
         updateTelemetry(telemetry);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(initX, 50), Math.toRadians(-90))
+                .splineTo(new Vector2d(initX, 55), Math.toRadians(-90))
                 .build());
 
 

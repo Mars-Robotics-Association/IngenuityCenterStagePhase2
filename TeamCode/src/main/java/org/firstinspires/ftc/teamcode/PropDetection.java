@@ -177,12 +177,12 @@ public class PropDetection {
     }   // end method telemetryTfod()
 
     public int propTfod() {
-        // Reutn values: -1 = Left, 0 = Middle, 1 = Right
+        // Return values: -1 = Left, 0 = Middle, 1 = Right
         int result = 0 ;  //Default t0 0 -> Middle
         //List<Recognition> currentRecognitions = tfod.getRecognitions();
         List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
         double highscore=0.75;
-        double highx=310;
+        double highx=0;
         myOpMode.telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
@@ -202,8 +202,8 @@ public class PropDetection {
 
         }   // end for() loop
         // At this point, we know the x value of the prop - highx
-        if(highx<160)result=-1;
-        else if(highx>480)result=1;
+        if(highx<10)result=-1;
+        else if(highx>320)result=1;
 
 
         myOpMode.telemetry.addData("Result =  ", result);
