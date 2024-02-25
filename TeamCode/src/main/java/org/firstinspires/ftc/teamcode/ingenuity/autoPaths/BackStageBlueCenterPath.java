@@ -24,9 +24,9 @@ public final class BackStageBlueCenterPath extends AutoPath {
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
-    public static double pushX = initX;
-    public static double pushY = initY - 33.5;
-    public static double pushAngle = initAngle;
+    public static double pushX = initX + 3.5;
+    public static double pushY = initY - 29;
+    public static double pushAngle = initAngle + 20;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
     public static double deliveryX = 48;
     public static double preDeliveryX = deliveryX - 6.5;
@@ -35,15 +35,15 @@ public final class BackStageBlueCenterPath extends AutoPath {
     public static double parkingY = 56;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
-    public PhaseTwoBot bot ;
-    public OpMode opMode ;
-    MecanumDrive drive ;
+    public PhaseTwoBot bot;
+    public OpMode opMode;
+    MecanumDrive drive;
 
     // Constructor - Instantiate this class before waitForStart ==============
     public BackStageBlueCenterPath(OpMode newOpMode, PhaseTwoBot newBot, MecanumDrive newDrive) {
-        opMode = newOpMode ;
-        bot = newBot ;
-        drive = newDrive ;
+        opMode = newOpMode;
+        bot = newBot;
+        drive = newDrive;
     }
 
     // Run this after Start ==================================================
@@ -54,14 +54,19 @@ public final class BackStageBlueCenterPath extends AutoPath {
 
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
+//                .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne))
+//                .splineTo(new Vector2d(pushX + 4.5, pushY), Math.toRadians(pushAngle + 20))
+//                .setReversed(true)
+//                .splineTo(new Vector2d(initX, initY - 8), Math.toRadians(initAngle - 180))
+//                .setReversed(false)
                 .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                .stopAndAdd(new SequentialAction(bot.gripperArm().gripperHalfOpenAction(),
+                        bot.gripperArm().moveArmToStopAction(1, true)))
                 .setReversed(true)
-                .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(new Vector2d(11, 33), Math.toRadians(invPushAngle))
+                .afterTime(0.5, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                 .splineTo(new Vector2d(26, 42), Math.toRadians(0))
                 .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
-                .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
+                .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0))
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
                         bot.gripperArm().gripperOpenAction(),
@@ -77,6 +82,7 @@ public final class BackStageBlueCenterPath extends AutoPath {
                 .strafeTo(new Vector2d(preDeliveryX, parkingY))
                 .setReversed(true)
                 .splineTo(new Vector2d(parkingX, parkingY), Math.toRadians(0))
+
                 .build());
     }
 }
