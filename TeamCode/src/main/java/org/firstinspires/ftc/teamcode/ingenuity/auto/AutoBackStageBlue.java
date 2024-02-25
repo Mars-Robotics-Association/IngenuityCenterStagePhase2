@@ -23,15 +23,15 @@ import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueRightPath
 @Config
 @Autonomous(name = "BackStageBlueAuto", group = "Auto 3.0 development")
 public final class AutoBackStageBlue extends LinearOpMode {
-    AutoPath autonomousPath ;
+    AutoPath autonomousPath;
     public static double initX = 12;
     public static double initY = 61;
     public static double initAngle = 270;
 
-    public PhaseTwoBot bot ;
-    MecanumDrive drive ;
-    int propPosition ;
-    PropDetection propDetector ;
+    public PhaseTwoBot bot;
+    MecanumDrive drive;
+    int propPosition;
+    PropDetection propDetector;
 
 
     @Override
@@ -48,24 +48,26 @@ public final class AutoBackStageBlue extends LinearOpMode {
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .splineTo(new Vector2d(initX, 55), Math.toRadians(-90))
-                        .afterTime(0,bot.gripperArm().setWristFlatZero())
+                .afterTime(0, bot.gripperArm().setWristFlatZero())
                 .build());
         sleep(5000);  // TODO: Lower this for Backstage
         propPosition = propDetector.propTfod();
         updateTelemetry(telemetry);
 
+        Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
+
         switch (propPosition) {
             case 0: // Middle
-                autonomousPath = new BackStageBlueCenterPath(this, bot, drive) ;
-                break ;
+                autonomousPath = new BackStageBlueCenterPath(this, bot, drive);
+                break;
             case 1: // Right
-                autonomousPath = new BackStageBlueRightPath(this, bot, drive) ;
-                break ;
+                autonomousPath = new BackStageBlueRightPath(this, bot, drive);
+                break;
             default: // Left
-                autonomousPath = new BackStageBlueLeftPath(this, bot, drive) ;
-                break ;
+                autonomousPath = new BackStageBlueLeftPath(this, bot, drive);
+                break;
         }
-        
+
         if (opModeIsActive()) autonomousPath.runAutoPath();
     }
 }
