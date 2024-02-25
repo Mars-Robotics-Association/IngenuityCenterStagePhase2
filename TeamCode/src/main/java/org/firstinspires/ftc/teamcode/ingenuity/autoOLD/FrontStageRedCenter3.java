@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ingenuity.auto;
+package org.firstinspires.ftc.teamcode.ingenuity.autoOLD;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -17,21 +17,26 @@ import org.firstinspires.ftc.teamcode.TimeoutAction;
 import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
-@Autonomous(name = "center 3 back stage blue", group = "Auto 3.0 development")
-public final class BackStageBlueCenter3 extends LinearOpMode {
-    public static double initX = 12;
-    public static double initY = 61;
-    public static double initAngle = 270;
+@Autonomous(name = "center 3 front stage red", group = "Auto 3.0 development")
+public final class FrontStageRedCenter3 extends LinearOpMode {
+    public static double initPause = 5.0;
+    public static double initX = -36;
+    public static double initY = -61;
+    public static double initAngle = 90;
     public static double pushX = initX;
-    public static double pushY = initY - 35.5;
+    public static double pushY = initY + 35.5;
     public static double pushAngle = initAngle;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
+    public static double centerLaneY = -13;
     public static double deliveryX = 48;
     public static double preDeliveryX = deliveryX - 6.5;
-    public static double deliveryY = 35;
+    public static double deliveryY = -26;
     public static double parkingX = 58;
-    public static double parkingY = 56;
+    public static double parkingY = -4;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
+    public static double armDelay = 4.25;
+    public static double wristDriving = 0.45;
+    public static int armDriving = 1475;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,12 +54,19 @@ public final class BackStageBlueCenter3 extends LinearOpMode {
             waitForStart();
 
             Actions.runBlocking(drive.actionBuilder(drive.pose)
-                    .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
+                    .stopAndAdd(new SleepAction(initPause))
+                    .afterTime(0.0, new SequentialAction(
+                            bot.gripperArm().moveArmToPositionAction(armDriving, "", true),
+                            bot.gripperArm().setWristPosition(wristDriving)))
                     .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
+                    .afterTime(0.85, bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne))
                     .setReversed(true)
-                    .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                    .splineTo(new Vector2d(11, 33), Math.toRadians(invPushAngle))
-                    .splineTo(new Vector2d(26, 42), Math.toRadians(0))
+                    .afterTime(armDelay, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
+                    .splineTo(new Vector2d(pushX, pushY - 8), Math.toRadians(invPushAngle))
+                    .splineTo(new Vector2d(-48, -47), Math.toRadians(180))
+                    .splineTo(new Vector2d(-55, pushY - 8), Math.toRadians(initAngle))
+                    .splineTo(new Vector2d(-36, centerLaneY), Math.toRadians(0))
+                    .splineTo(new Vector2d(18, centerLaneY), Math.toRadians(0))
                     .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
                     .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
                     .stopAndAdd(new SequentialAction(

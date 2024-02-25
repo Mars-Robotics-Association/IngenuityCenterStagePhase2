@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ingenuity.auto;
+package org.firstinspires.ftc.teamcode.ingenuity.autoOLD;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -17,18 +17,20 @@ import org.firstinspires.ftc.teamcode.TimeoutAction;
 import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
-@Autonomous(name = "center 3 back stage red", group = "Auto 3.0 development")
-public final class BackStageRedCenter3 extends LinearOpMode {
+@Autonomous(name = "left 3 back stage red", group = "Auto 3.0 development")
+public final class BackStageRedLeft3 extends LinearOpMode {
     public static double initX = 11;
     public static double initY = -61;
     public static double initAngle = 90;
-    public static double pushX = initX;
-    public static double pushY = initY + 35.5;
-    public static double pushAngle = initAngle;
-    public static double invPushAngle = ((int) pushAngle + 180) % 360;
-    public static double deliveryX = 48;
-    public static double preDeliveryX = deliveryX - 6.5;
-    public static double deliveryY = -35;
+    public static double pushX = initX - 8.5;
+    public static double pushY = initY + 26;
+    public static double pushAngle = initAngle + 40;
+    public static double invPushAngle = ((int) pushAngle + 180 + 10) % 360;
+    public static double backOffXby = 4.5;
+    public static double backOffYby = 4.5;
+    public static double deliveryX = 49;
+    public static double preDeliveryX = deliveryX - 14;
+    public static double deliveryY = -27;
     public static double parkingX = 58;
     public static double parkingY = -56;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
@@ -44,17 +46,17 @@ public final class BackStageRedCenter3 extends LinearOpMode {
                     bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne)
             ));
 
-            MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(initX, initY, Math.toRadians(initAngle)));
+            MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(11, -61, Math.toRadians(90)));
 
             waitForStart();
 
             Actions.runBlocking(drive.actionBuilder(drive.pose)
+                    .splineTo(new Vector2d(initX, initY + 8), Math.toRadians(initAngle))
                     .afterTime(0.0, bot.gripperArm().moveArmToStopAction(1, true))
                     .splineTo(new Vector2d(pushX, pushY), Math.toRadians(pushAngle))
                     .setReversed(true)
                     .afterTime(0.0, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                    .splineTo(new Vector2d(11, -33), Math.toRadians(invPushAngle))
-                    .splineTo(new Vector2d(26, -42), Math.toRadians(0))
+                    .splineTo(new Vector2d(pushX + backOffXby, pushY - backOffYby), Math.toRadians(invPushAngle))
                     .splineTo(new Vector2d(preDeliveryX, deliveryY), Math.toRadians(0))
                     .splineTo(new Vector2d(deliveryX, deliveryY), Math.toRadians(0), slow)
                     .stopAndAdd(new SequentialAction(
