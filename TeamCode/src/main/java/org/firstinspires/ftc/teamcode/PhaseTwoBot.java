@@ -26,13 +26,13 @@ import java.util.concurrent.TimeUnit;
 @Config
 public class PhaseTwoBot {
     public static int closeToZero = 550;
-    public static double noWakeSpeed = -0.35;
+    public static double noWakeSpeed = 0.35;
     public static boolean autoWrist = true;
     public static int gripperCloseTime = 350;
-    public static int gripperOpenTime = 300;
+    public static int wristLowerTime = 500;
     public static double wristFlatZero = 0.27;
     public static double wristTuckedUp = 0.75;
-    public static double gripperOpenPosition = 0.55;
+    public static double gripperOpenPosition = 0.57;
     public static double gripperHalfOpenPosition = .515;
     public static double gripperClosedPosition = .47;
     public static double wristPosition = 0.35;
@@ -93,8 +93,8 @@ public class PhaseTwoBot {
         private WormGroup armMotor;
         private Servo gripper;
         private Servo wrist;
-        private Timing.Timer gripperCloseTimer;
-        private Timing.Timer gripperOpenTimer;
+        private Timing.Timer keepWristDownTimer;
+        private Timing.Timer keepGripperClosedTimer;
         private TouchSensor touchSensor;  // Touch sensor Object
         private Motor.RunMode armRunMode = Motor.RunMode.RawPower;
 
@@ -120,7 +120,7 @@ public class PhaseTwoBot {
         private int armBottomBackScore = 2409;
         private double wristBottomBackScore = 0.57;
 
-        private int[] armStops = {0, armMaxFlat*9/10, (armTopBackScore + armBottomBackScore) / 2};
+        private int[] armStops = {0, armMaxFlat * 9 / 10, (armTopBackScore + armBottomBackScore) / 2};
 
         private boolean lowerLimit;
 
@@ -136,7 +136,7 @@ public class PhaseTwoBot {
         }
 
         private double wristServoValue(int armTicks) {
-            if (armTicks < armMaxFlat && gripperPosition == gripperClosedPosition && gripperCloseTimer.done()) {
+            if (armTicks < armMaxFlat && gripperPosition == gripperClosedPosition && keepWristDownTimer.done()) {
                 return wristTuckedUp;
             } else if (armTicks <= armMaxFlat) {
                 return linearInterpolation(armTicks, 0, armMaxFlat, wristFlatZero, wristMaxFlat);
@@ -170,8 +170,8 @@ public class PhaseTwoBot {
             armMotor.setPositionPI(positionCoefficient, positionIntegralCoeff);
             armMotor.setPositionTolerance(positionTolerance);
 
-            gripperCloseTimer = new Timing.Timer(gripperCloseTime, TimeUnit.MILLISECONDS);
-            gripperOpenTimer = new Timing.Timer(gripperOpenTime, TimeUnit.MILLISECONDS);
+            keepWristDownTimer = new Timing.Timer(gripperCloseTime, TimeUnit.MILLISECONDS);
+            keepGripperClosedTimer = new Timing.Timer(wristLowerTime, TimeUnit.MILLISECONDS);
 
             touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
         }
@@ -188,18 +188,20 @@ public class PhaseTwoBot {
         }
 
         public void closeGripper() {
-            gripperCloseTimer.start();
-            gripperOpenTimer.pause();
+            keepWristDownTimer.start();
+            keepGripperClosedTimer.pause();
             gripperPosition = gripperClosedPosition;
         }
 
         public void halfOpenGripper() {
-            gripperCloseTimer.pause();
-            gripperOpenTimer.start();
+            keepWristDownTimer.pause();
+            keepGripperClosedTimer.start();
             gripperPosition = gripperHalfOpenPosition;
         }
 
         public void openGripper() {
+            keepGripperClosedTimer.pause();
+            keepWristDownTimer.pause();
             gripperPosition = gripperOpenPosition;
         }
 
@@ -269,20 +271,20 @@ public class PhaseTwoBot {
                         armMotor.getCurrentPosition() > armMax ? Math.min(netTrigger, 0.0) :
                                 netTrigger;
 
-                double cubed = netTrigger * netTrigger * netTrigger;
+                double expo = netTrigger * netTrigger * netTrigger * netTrigger * netTrigger;
 
                 this.setArmRunMode(Motor.RunMode.RawPower);
 
                 // this ensures that the next time it switches to positional, it will base it on current position
                 armSetpointIdx = -1;
 
-                double armPower = armExpo * cubed + (1.0 - armExpo) * netTrigger;
+                double armPower = armExpo * expo + (1.0 - armExpo) * netTrigger;
                 double pos = armMotor.getCurrentPosition();
 
                 armMotor.set(pos < closeToZero && armPower < 0.0 ?
-                        Math.max(armPower, noWakeSpeed) :
+                        Math.max(armPower, -noWakeSpeed) :
                         pos > armMax - closeToZero ?
-                                Math.min(armPower, -noWakeSpeed) :
+                                Math.min(armPower, noWakeSpeed) :
                                 armPower);
             }
         }
@@ -394,7 +396,7 @@ public class PhaseTwoBot {
                     setArmRunMode(Motor.RunMode.PositionControl);
                     packet.put(stepName + "target pos", targetPos);
                     beginTs = now();
-                    armMotor.moveArmToPosInit(Math.min(armMax, Math.max(0, targetPos)), runtime.seconds());
+                    armMotor.moveArmToPosInit(Math.min(armMax, Math.max(0, targetPos)), runtime.seconds(), WormGroup.maxAccel / 2.0);
                     initialized = true;
                 }
 
@@ -478,7 +480,7 @@ public class PhaseTwoBot {
         }
 
         public Action gripperOpenAction() {
-            return moveGripperAction(gripperOpenPosition, gripperOpenTime);
+            return moveGripperAction(gripperOpenPosition, wristLowerTime);
         }
 
         public Action setWristPosition(double pos) {
@@ -507,13 +509,13 @@ public class PhaseTwoBot {
                 wristPosition = wristServoValue(armTicks);
             }
 
-            gripper.setPosition(armTicks < armMaxFlat && gripperOpenTimer.isTimerOn() && !gripperOpenTimer.done()
+            gripper.setPosition(armTicks < armMaxFlat && keepGripperClosedTimer.isTimerOn() && !keepGripperClosedTimer.done()
                     ? gripperClosedPosition
                     : gripperPosition);
             wrist.setPosition(wristPosition);
 
             telemetry.addData("arm: ", armMotor.getCurrentPosition());
-            telemetry.addData("timer: ", gripperCloseTimer.elapsedTime());
+            telemetry.addData("timer: ", keepWristDownTimer.elapsedTime());
 
             lowerLimit = touchSensor.isPressed();
 
@@ -619,7 +621,7 @@ public class PhaseTwoBot {
     }
 
     public static double launcherOpenPosition = 0.7;
-    public static double launcherClosedPosition = 1;
+    public static double launcherClosedPosition = 0.95;
     public static double launcherPosition = launcherClosedPosition;
 
     private DroneLauncher droneLauncher;
@@ -667,31 +669,31 @@ public class PhaseTwoBot {
     }
 
     public class Winch {
-//        private Motor winchMotor;
+        private Motor winchMotor;
 
         public Winch() {
-//            winchMotor = new Motor(hardwareMap, "winchMotor", Motor.GoBILDA.RPM_117);
-//            winchMotor.setRunMode(Motor.RunMode.RawPower);
+            winchMotor = new Motor(hardwareMap, "winchMotor", Motor.GoBILDA.RPM_117);
+            winchMotor.setRunMode(Motor.RunMode.RawPower);
         }
 
         public void windUp() {
-//            winchMotor.set(0.3);
+            winchMotor.set(0.3);
         }
 
         public void windDown() {
-//            winchMotor.set(-0.3);
+            winchMotor.set(-0.3);
         }
 
         public void stop() {
-//            winchMotor.set(0);
+            winchMotor.set(0);
         }
 
         public void setPower(double raw) {
-//            winchMotor.set(raw);
+            winchMotor.set(raw);
         }
 
-//        public void writeTelemetry() {
-//            telemetry.addData("winchPosition: ", winchMotor.getCurrentPosition());
-//        }
+        public void writeTelemetry() {
+            telemetry.addData("winchPosition: ", winchMotor.getCurrentPosition());
+        }
     }
 }

@@ -47,11 +47,15 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
         this.telemetry = telemetry;
     }
 
-    public void moveArmToPosInit(int targetPos, double currentSeconds) {
+    public void moveArmToPosInit(int targetPos, double currentSeconds, double maxAccel) {
         setRunMode(RunMode.RawPower);
         profileMapping = new MotionProfileMapping(telemetry, maxAccel, maxVelocity, getCurrentPosition(),
                 getVelocity(), targetPos, currentSeconds, Ks, Kv, Kp, Ki);
         profileMapping.setTolerances(profilePosTolerance, 20);
+    }
+
+    public void moveArmToPosInit(int targetPos, double currentSeconds) {
+        moveArmToPosInit(targetPos, currentSeconds, WormGroup.maxAccel);
     }
 
     public boolean moveArmToPosLoop(double currentSeconds) {

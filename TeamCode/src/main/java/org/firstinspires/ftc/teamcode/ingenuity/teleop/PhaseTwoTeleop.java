@@ -56,7 +56,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
     private GamepadEx payloadOp;
     private ThreeStateToggle toggleX;
     private ToggleButtonReader toggleY;
-    private ToggleButtonReader toggleStick;
+    private ToggleButtonReader toggleRightStick;
     private ToggleButtonReader toggleB;
     private PhaseTwoBot bot;
 
@@ -80,7 +80,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         toggleX = new ThreeStateToggle(payloadOp, GamepadKeys.Button.X);
         toggleY = new ToggleButtonReader(payloadOp, GamepadKeys.Button.Y);
         toggleB = new ToggleButtonReader(payloadOp, GamepadKeys.Button.B);
-        toggleStick = new ToggleButtonReader(driverOp, GamepadKeys.Button.LEFT_STICK_BUTTON);
+        toggleRightStick = new ToggleButtonReader(driverOp, GamepadKeys.Button.RIGHT_STICK_BUTTON);
 
         bot = new PhaseTwoBot(hardwareMap, telemetry, runtime);
         bot.gripperArm();
@@ -120,22 +120,24 @@ public abstract class PhaseTwoTeleop extends OpMode {
         driverOp.readButtons();
 
         if (drivingEnabled) {
-            bot.ftcLibMecanumDrive().loop(driverOp.isDown(GamepadKeys.Button.A),
-                    toggleStick.getState(),
+            bot.ftcLibMecanumDrive().loop(driverOp.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON),
+                    toggleRightStick.getState(),
                     driverOp.getLeftX(),
                     driverOp.getLeftY(),
                     driverOp.getRightX());
         }
 
-        toggleStick.readValue();
+        toggleRightStick.readValue();
 
         if (toggleX.stateJustChanged()) {
-            if (toggleX.getState() == 0) {
-                bot.gripperArm().closeGripper();
-            } else if (toggleX.getState() == 1) {
-                bot.gripperArm().halfOpenGripper();
-            } else {
+            int xState = toggleX.getState();
+            telemetry.addData("gripper state", xState);
+            if (xState == 0) {
                 bot.gripperArm().openGripper();
+            } else if (xState == 1) {
+                bot.gripperArm().closeGripper();
+            } else {
+                bot.gripperArm().halfOpenGripper();
             }
         }
         toggleX.readValue();
@@ -167,6 +169,8 @@ public abstract class PhaseTwoTeleop extends OpMode {
             telemetry.addData("Max arm rate", maxRate);
         }
 
+        telemetry.addData("lastBumper", lastBumper);
+
         double currentTime = runtime.seconds();
         double armPos = bot.gripperArm().getArmPosition();
         timeQueue.offer(currentTime);
@@ -182,14 +186,14 @@ public abstract class PhaseTwoTeleop extends OpMode {
 
         bot.gripperArm().loop();
 
-//        if (driverOp.isDown(GamepadKeys.Button.DPAD_UP)) {
-//            bot.winch().windUp();
-//        } else if (driverOp.isDown(GamepadKeys.Button.DPAD_DOWN)) {
-//            bot.winch().windDown();
-//        } else {
-//            bot.winch().stop();
-//        }
-//        bot.winch().writeTelemetry();
+        if (driverOp.isDown(GamepadKeys.Button.DPAD_UP)) {
+            bot.winch().windUp();
+        } else if (driverOp.isDown(GamepadKeys.Button.DPAD_DOWN)) {
+            bot.winch().windDown();
+        } else {
+            bot.winch().stop();
+        }
+        bot.winch().writeTelemetry();
 
         if (driverOp.isDown(GamepadKeys.Button.DPAD_RIGHT)) {
             if (driverOp.wasJustReleased(GamepadKeys.Button.A)) {
