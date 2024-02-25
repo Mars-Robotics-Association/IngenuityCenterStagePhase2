@@ -29,7 +29,7 @@ public final class BackStageBlueLeftPath extends AutoPath {
     public static double deliveryY = 41;
     public static double parkingX = 58;
     public static double parkingY = 56;
-    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 1200);
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
     public PhaseTwoBot bot ;
     public OpMode opMode ;

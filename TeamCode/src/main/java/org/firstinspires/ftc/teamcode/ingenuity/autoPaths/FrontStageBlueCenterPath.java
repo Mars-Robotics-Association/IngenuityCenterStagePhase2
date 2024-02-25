@@ -28,7 +28,7 @@ public final class FrontStageBlueCenterPath extends AutoPath {
     public static double deliveryY = 31;
     public static double parkingX = 58;
     public static double parkingY = 8;
-    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 1200);
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
     public static double armDelay = 4.25;
 
     public PhaseTwoBot bot ;
