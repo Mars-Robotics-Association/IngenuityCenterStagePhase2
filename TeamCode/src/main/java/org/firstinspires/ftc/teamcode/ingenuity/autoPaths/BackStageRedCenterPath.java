@@ -18,7 +18,7 @@ public final class BackStageRedCenterPath extends AutoPath {
     public static double initY = -61;
     public static double initAngle = 90;
     public static double pushX = initX;
-    public static double pushY = initY + 35.5;
+    public static double pushY = initY + 19;
     public static double pushAngle = initAngle;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
     public static double deliveryX = 48;

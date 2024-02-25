@@ -18,8 +18,8 @@ public final class FrontStageBlueRightPath extends AutoPath {
     public static double initX = -36;
     public static double initY = 61;
     public static double initAngle = 270;
-    public static double pushX = initX - 6;
-    public static double pushY = initY - 26;
+    public static double pushX = initX - 4;
+    public static double pushY = initY - 25;
     public static double pushAngle = initAngle - 40;
     public static double invPushAngle = ((int) pushAngle + 180) % 360;
     public static double backoffDistance = 4;
