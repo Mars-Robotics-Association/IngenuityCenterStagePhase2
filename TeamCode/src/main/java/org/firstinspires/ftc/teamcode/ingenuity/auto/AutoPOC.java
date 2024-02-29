@@ -17,17 +17,15 @@ import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueRightPath;
-import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageRedCenterPath;
-import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageRedLeftPath;
-import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageRedRightPath;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.POCPath;
 
 @Config
-@Autonomous(name = "BackStageRedAuto", group = "Auto 3.0 development")
-public final class AutoBackStageRed extends LinearOpMode {
+@Autonomous(name = "POC Auto", group = "Auto 3.0 development")
+public final class AutoPOC extends LinearOpMode {
     AutoPath autonomousPath;
     public static double initX = 12;
-    public static double initY = -61;
-    public static double initAngle = 90;
+    public static double initY = 61;
+    public static double initAngle = 270;
 
     public PhaseTwoBot bot;
     MecanumDrive drive;
@@ -49,26 +47,26 @@ public final class AutoBackStageRed extends LinearOpMode {
         waitForStart(); // ========================================================================
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(initX, -53), Math.toRadians(90))
-                .afterTime(0, bot.gripperArm().setWristFlatZero())
+                .splineTo(new Vector2d(initX, 53), Math.toRadians(-90))  // Drive closer to the team prop to get a better view
+                .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
-        sleep(1000);  // TODO: Lower this for Backstage
-        propPosition = propDetector.propTfod();
+        sleep(3000);  // Wait for the vision processor to scan TODO: Lower this for Backstage
+        propPosition = propDetector.propTfod();   // Get the prop position: -1 = Left, 0 = Middle, 1 = Right
         updateTelemetry(telemetry);
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
         switch (propPosition) {
             case 0: // Middle
-                autonomousPath = new BackStageRedCenterPath(this, bot, drive);
+                autonomousPath = new BackStageBlueCenterPath(this, bot, drive);
                 break;
             case 1: // Right
-                autonomousPath = new BackStageRedRightPath(this, bot, drive);
+                autonomousPath = new BackStageBlueRightPath(this, bot, drive);
                 break;
             default: // Left
-                autonomousPath = new BackStageRedLeftPath(this, bot, drive);
+                autonomousPath = new BackStageBlueLeftPath(this, bot, drive);
                 break;
         }
 
-        if (opModeIsActive()) autonomousPath.runAutoPath();
+        if (opModeIsActive()) new POCPath(this, bot, drive).runAutoPath();
     }
 }
