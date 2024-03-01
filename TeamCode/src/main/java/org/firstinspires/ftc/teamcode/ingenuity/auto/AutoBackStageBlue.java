@@ -48,11 +48,11 @@ public final class AutoBackStageBlue extends LinearOpMode {
         waitForStart(); // ========================================================================
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(initX, 53), Math.toRadians(-90))
-                .afterTime(0, bot.gripperArm().setWristFlatZero())
+                .splineTo(new Vector2d(initX, 53), Math.toRadians(-90))  // Drive closer to the team prop to get a better view
+                .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
-        sleep(1000);  // TODO: Lower this for Backstage
-        propPosition = propDetector.propTfod();
+        sleep(1000);  // Wait for the vision processor to scan TODO: Lower this for Backstage
+        propPosition = propDetector.propTfod();   // Get the prop position: -1 = Left, 0 = Middle, 1 = Right
         updateTelemetry(telemetry);
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
