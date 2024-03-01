@@ -36,6 +36,7 @@ import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.DriveSpeed;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.ThreeStateToggle;
 
@@ -119,8 +120,13 @@ public abstract class PhaseTwoTeleop extends OpMode {
     public void loop() {
         driverOp.readButtons();
 
+        double armPos = bot.gripperArm().getArmPosition();
+        DriveSpeed driveSpeed = armPos > (bot.gripperArm().armApex + 160) ? DriveSpeed.PRECISION :
+                driverOp.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? DriveSpeed.BOOST :
+                        DriveSpeed.MEDIUM;
+
         if (drivingEnabled) {
-            bot.ftcLibMecanumDrive().loop(driverOp.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON),
+            bot.ftcLibMecanumDrive().loop(driveSpeed,
                     toggleRightStick.getState(),
                     driverOp.getLeftX(),
                     driverOp.getLeftY(),
@@ -172,7 +178,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         telemetry.addData("lastBumper", lastBumper);
 
         double currentTime = runtime.seconds();
-        double armPos = bot.gripperArm().getArmPosition();
+
         timeQueue.offer(currentTime);
         positionQueue.offer(armPos);
         if (timeQueue.size() == 40) {

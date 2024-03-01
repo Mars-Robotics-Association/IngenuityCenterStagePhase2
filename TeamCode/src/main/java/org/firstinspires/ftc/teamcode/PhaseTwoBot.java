@@ -103,7 +103,7 @@ public class PhaseTwoBot {
 
         private int armSetpointIdx = -1;
         //private int[] armStops = {0, 289, 1150, 1700, 6000};
-        private int armApex = 1417;
+        public final int armApex = 1417;
 
 
         private int armMaxFlat = 160;
@@ -555,6 +555,7 @@ public class PhaseTwoBot {
 
     public static double boostSpeed = 1.0;
     public static double normalSpeed = .6;
+    public static double precisionSpeed = .4;
 
     private FtcLibMecanumDrive ftcLibMecanumDrive;
 
@@ -598,20 +599,22 @@ public class PhaseTwoBot {
             imu.reset();
         }
 
-        public void loop(boolean boost, boolean fieldCentric, double strafeInput, double forwardInput, double turnInput) {
-            double driveSpeed = boost ? boostSpeed : normalSpeed;
+        public void loop(DriveSpeed driveSpeed, boolean fieldCentric, double strafeInput, double forwardInput, double turnInput) {
+            double drivingSpeed =
+                    driveSpeed == DriveSpeed.BOOST ? boostSpeed :
+                            driveSpeed == DriveSpeed.MEDIUM ? normalSpeed : precisionSpeed;
 
             if (!fieldCentric) {
                 drive.driveRobotCentric(
-                        strafeInput * driveSpeed,
-                        forwardInput * driveSpeed,
-                        turnInput * driveSpeed * .7
+                        strafeInput * drivingSpeed,
+                        forwardInput * drivingSpeed,
+                        turnInput * drivingSpeed * .7
                 );
             } else {
                 drive.driveFieldCentric(
-                        strafeInput * driveSpeed,
-                        forwardInput * driveSpeed,
-                        turnInput * driveSpeed * .7,
+                        strafeInput * drivingSpeed,
+                        forwardInput * drivingSpeed,
+                        turnInput * drivingSpeed * .7,
                         imu.getRotation2d().getDegrees() - headingOffset
                 );
             }
