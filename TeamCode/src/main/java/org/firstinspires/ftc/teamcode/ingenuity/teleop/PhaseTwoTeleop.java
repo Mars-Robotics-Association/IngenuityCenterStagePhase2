@@ -121,7 +121,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         driverOp.readButtons();
 
         double armPos = bot.gripperArm().getArmPosition();
-        DriveSpeed driveSpeed = armPos > (bot.gripperArm().armApex + 160) ? DriveSpeed.PRECISION :
+        DriveSpeed driveSpeed = armPos > (bot.gripperArm().armApex + 100) ? DriveSpeed.PRECISION :
                 driverOp.isDown(GamepadKeys.Button.LEFT_STICK_BUTTON) ? DriveSpeed.BOOST :
                         DriveSpeed.MEDIUM;
 

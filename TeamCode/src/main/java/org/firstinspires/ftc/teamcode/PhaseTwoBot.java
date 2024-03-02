@@ -33,8 +33,8 @@ public class PhaseTwoBot {
     public static double wristFlatZero = 0.27;
     public static double wristTuckedUp = 0.75;
     public static double gripperOpenPosition = 0.57;
-    public static double gripperHalfOpenPosition = .515;  // .515
-    public static double gripperClosedPosition = .46;
+    public static double gripperHalfOpenPosition = .505;  // .515
+    public static double gripperClosedPosition = .45;
     public static double wristPosition = 0.35;
     public static double gripperPosition = gripperOpenPosition;
     public static double armExpo = 0.95;
@@ -679,6 +679,7 @@ public class PhaseTwoBot {
 
         public Winch() {
             winchMotor = new Motor(hardwareMap, "winchMotor", Motor.GoBILDA.RPM_117);
+            winchMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
             winchMotor.setRunMode(Motor.RunMode.RawPower);
         }
 

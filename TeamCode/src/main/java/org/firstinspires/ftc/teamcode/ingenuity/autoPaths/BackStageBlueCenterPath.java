@@ -21,17 +21,24 @@ import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @Config
 public final class BackStageBlueCenterPath extends AutoPath {
-    public static double pushX = initX + 2.0;
-    public static double pushY = initY - 29;
-    public static double pushAngle = initAngle + 20;
-    public static double invPushAngle = AutoPath.reverseAngle(pushAngle);
-    public static double deliveryX = 48;
-    public static double preDeliveryX = deliveryX - 6.5;
-    public static double deliveryY = 35;
+    public static double pushX;
+    public static double pushY;
+    public static double pushAngle;
+    public static double invPushAngle;
+    public static double deliveryX;
+    public static double preDeliveryX;
+    public static double deliveryY;
 
     // Constructor - Instantiate this class before waitForStart ==============
     public BackStageBlueCenterPath(OpMode newOpMode, PhaseTwoBot newBot, MecanumDrive newDrive) {
         super(StartingPosition.BACK_BLUE, newOpMode, newBot, newDrive);
+        pushX = initX + 2.0;
+        pushY = initY - 29;
+        pushAngle = initAngle + 20;
+        invPushAngle = AutoPath.reverseAngle(pushAngle);
+        deliveryX = 48;
+        preDeliveryX = deliveryX - 6.5;
+        deliveryY = 35;
     }
 
     // Run this after Start ==================================================

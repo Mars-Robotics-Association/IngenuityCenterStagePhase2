@@ -14,19 +14,30 @@ import org.firstinspires.ftc.teamcode.TimeoutAction;
 
 @Config
 public final class BackStageBlueRightPath extends AutoPath {
-    public static double pushX = initX - 5.5;
-    public static double pushY = initY - 23;
-    public static double pushAngle = initAngle - 40;
-    public static double invPushAngle = AutoPath.reverseAngle(pushAngle - 10);
-    public static double backOffXby = 4.5;
-    public static double backOffYby = 4.5;
-    public static double deliveryX = 49;
-    public static double preDeliveryX = deliveryX - 14;
-    public static double deliveryY = 27;
+
+    public static double pushX;
+    public static double pushY;
+    public static double pushAngle;
+    public static double invPushAngle;
+    public static double backOffXby;
+    public static double backOffYby;
+    public static double deliveryX;
+    public static double preDeliveryX;
+    public static double deliveryY;
 
     // Constructor - Instantiate this class before waitForStart ==============
     public BackStageBlueRightPath(OpMode newOpMode, PhaseTwoBot newBot, MecanumDrive newDrive) {
         super(StartingPosition.BACK_BLUE, newOpMode, newBot, newDrive);
+
+        pushX = initX - 5.5;
+        pushY = initY - 23;
+        pushAngle = initAngle - 40;
+        invPushAngle = AutoPath.reverseAngle(pushAngle - 10);
+        backOffXby = 4.5;
+        backOffYby = 4.5;
+        deliveryX = 49;
+        preDeliveryX = deliveryX - 14;
+        deliveryY = 27;
     }
 
     // Run this after Start ==================================================

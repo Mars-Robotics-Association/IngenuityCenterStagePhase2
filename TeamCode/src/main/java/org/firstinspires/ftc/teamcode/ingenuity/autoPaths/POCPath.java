@@ -28,15 +28,10 @@ public final class POCPath extends AutoPath {
     public static double parkingY = 56;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
-    public PhaseTwoBot bot;
-    public OpMode opMode;
-    MecanumDrive drive;
 
     // Constructor - Instantiate this class before waitForStart ==============
     public POCPath(OpMode newOpMode, PhaseTwoBot newBot, MecanumDrive newDrive) {
-        opMode = newOpMode;
-        bot = newBot;
-        drive = newDrive;
+      super(StartingPosition.BACK_BLUE, newOpMode, newBot,newDrive);
     }
 
     // Run this after Start ==================================================

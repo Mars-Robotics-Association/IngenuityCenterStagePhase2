@@ -14,20 +14,30 @@ import org.firstinspires.ftc.teamcode.TimeoutAction;
 
 @Config
 public final class BackStageBlueLeftPath extends AutoPath {
-    public static double pushX = initX + 10;
-    public static double pushY = initY - 23;
-    public static double pushAngle = initAngle + 30;
-    public static double invPushAngle = AutoPath.reverseAngle(pushAngle);
-    public static double backoffDistance = 4;
-    public static double backOffXby = Math.sin(Math.toRadians(invPushAngle - 90)) * backoffDistance;
-    public static double backOffYby = Math.cos(Math.toRadians(invPushAngle - 90)) * backoffDistance;
-    public static double deliveryX = 48;
-    public static double preDeliveryX = deliveryX - 6.5;
-    public static double deliveryY = 41;
+    public static double pushX;
+    public static double pushY;
+    public static double pushAngle;
+    public static double invPushAngle;
+    public static double backoffDistance;
+    public static double backOffXby;
+    public static double backOffYby;
+    public static double deliveryX;
+    public static double preDeliveryX;
+    public static double deliveryY;
 
     // Constructor - Instantiate this class before waitForStart ==============
     public BackStageBlueLeftPath(OpMode newOpMode, PhaseTwoBot newBot, MecanumDrive newDrive) {
         super(StartingPosition.BACK_BLUE, newOpMode, newBot, newDrive);
+        pushX = initX + 10;
+        pushY = initY - 23;
+        pushAngle = initAngle + 30;
+        invPushAngle = AutoPath.reverseAngle(pushAngle);
+        backoffDistance = 4;
+        backOffXby = Math.sin(Math.toRadians(invPushAngle - 90)) * backoffDistance;
+        backOffYby = Math.cos(Math.toRadians(invPushAngle - 90)) * backoffDistance;
+        deliveryX = 48;
+        preDeliveryX = deliveryX - 6.5;
+        deliveryY = 41;
     }
 
     // Run this after Start ==================================================

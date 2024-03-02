@@ -24,9 +24,9 @@ import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueRightPath
 @Autonomous(name = "BackStageBlueAuto", group = "Auto 3.0 development")
 public final class AutoBackStageBlue extends LinearOpMode {
     AutoPath autonomousPath;
-    public static double initX = 12;
-    public static double initY = 61;
-    public static double initAngle = 270;
+    public static double initX = AutoPath.initXBack;
+    public static double initY = AutoPath.initYBlue;
+    public static double initAngle = AutoPath.initAngleBlue;
 
     public PhaseTwoBot bot;
     MecanumDrive drive;
