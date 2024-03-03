@@ -176,39 +176,39 @@ public class PropDetection {
 
     }   // end method telemetryTfod()
 
-    public int propTfod() {
+    public PropPosition propTfod() {
         // Return values: -1 = Left, 0 = Middle, 1 = Right
-        int result = 0 ;  //Default t0 0 -> Middle
+        PropPosition result = PropPosition.MIDDLE;  //Default t0 0 -> Middle
         //List<Recognition> currentRecognitions = tfod.getRecognitions();
         List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
-        double highscore=0.75;
-        double highx=0;
+        double highscore = 0.75;
+        double highx = 0;
         myOpMode.telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-            if(highscore<recognition.getConfidence()){
-                highscore=recognition.getConfidence();
-                highx=x;
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
+            if (highscore < recognition.getConfidence()) {
+                highscore = recognition.getConfidence();
+                highx = x;
 
             }
 
-            myOpMode.telemetry.addData(""," ");
+            myOpMode.telemetry.addData("", " ");
             myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             myOpMode.telemetry.addData("- Position", "%.0f / %.0f", x, y);
             myOpMode.telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
         }   // end for() loop
         // At this point, we know the x value of the prop - highx
-        if(highx<10)result=-1;
-        else if(highx>320)result=1;
+        if (highx < 10) result = PropPosition.LEFT;
+        else if (highx > 320) result = PropPosition.RIGHT;
 
 
         myOpMode.telemetry.addData("Result =  ", result);
 
-        return result ;
+        return result;
 
     }   // end method telemetryTfod()
 

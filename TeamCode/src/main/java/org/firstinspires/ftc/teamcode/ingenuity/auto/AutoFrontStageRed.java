@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
+import org.firstinspires.ftc.teamcode.PropPosition;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
@@ -31,7 +32,7 @@ public final class AutoFrontStageRed extends LinearOpMode {
 
     public PhaseTwoBot bot;
     MecanumDrive drive;
-    int propPosition;
+    PropPosition propPosition;
     PropDetection propDetector;
 
 
@@ -58,13 +59,13 @@ public final class AutoFrontStageRed extends LinearOpMode {
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
         switch (propPosition) {
-            case 0: // Middle
+            case MIDDLE: 
                 autonomousPath = new FrontStageRedCenterPath(this, bot, drive);
                 break;
-            case 1: // Right
+            case RIGHT:
                 autonomousPath = new FrontStageRedRightPath(this, bot, drive);
                 break;
-            default: // Left
+            default:
                 autonomousPath = new FrontStageRedLeftPath(this, bot, drive);
                 break;
         }

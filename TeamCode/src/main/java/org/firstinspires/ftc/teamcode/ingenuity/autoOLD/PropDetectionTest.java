@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
+import org.firstinspires.ftc.teamcode.PropPosition;
 
 @Config
 @Autonomous(name = "Prop Detection Test", group = "Auto 3.0 development")
@@ -31,7 +32,7 @@ public final class PropDetectionTest extends LinearOpMode {
     public static double parkingY = 56;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
-    int propPosition ;
+    PropPosition propPosition ;
     PropDetection propDetector ;
 
     @Override
