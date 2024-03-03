@@ -39,14 +39,6 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-/*
- * This OpMode illustrates the basics of TensorFlow Object Detection,
- * including Java Builder structures for specifying Vision parameters.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
- */
-
 public class PropDetection {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -172,13 +164,13 @@ public class PropDetection {
             myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             myOpMode.telemetry.addData("- Position", "%.0f / %.0f", x, y);
             myOpMode.telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-        }   // end for() loop
+        }
 
     }   // end method telemetryTfod()
 
-    public int propTfod() {
-        // Return values: -1 = Left, 0 = Middle, 1 = Right
-        int result = 0 ;  //Default t0 0 -> Middle
+    public PropPosition propTfod() {
+
+        PropPosition result = PropPosition.MIDDLE;  //Default to middle
         //List<Recognition> currentRecognitions = tfod.getRecognitions();
         List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
         double highscore=0.75;
@@ -189,21 +181,20 @@ public class PropDetection {
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-            if(highscore<recognition.getConfidence()){
-                highscore=recognition.getConfidence();
+            float confidence= recognition.getConfidence();
+            if(highscore<confidence){
+                highscore=confidence;
                 highx=x;
-
             }
 
             myOpMode.telemetry.addData(""," ");
             myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             myOpMode.telemetry.addData("- Position", "%.0f / %.0f", x, y);
             myOpMode.telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-
-        }   // end for() loop
+        }
         // At this point, we know the x value of the prop - highx
-        if(highx<10)result=-1;
-        else if(highx>320)result=1;
+        if(highx<10)result= PropPosition.LEFT;
+        else if(highx>320)result= PropPosition.RIGHT;
 
 
         myOpMode.telemetry.addData("Result =  ", result);

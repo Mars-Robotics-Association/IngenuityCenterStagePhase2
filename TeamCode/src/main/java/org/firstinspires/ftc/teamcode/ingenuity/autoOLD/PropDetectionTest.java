@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
+import org.firstinspires.ftc.teamcode.PropPosition;
 
 @Config
 @Autonomous(name = "Prop Detection Test", group = "Auto 3.0 development")
@@ -31,8 +32,8 @@ public final class PropDetectionTest extends LinearOpMode {
     public static double parkingY = 56;
     public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
 
-    int propPosition ;
-    PropDetection propDetector ;
+    PropPosition propPosition;
+    PropDetection propDetector;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -41,7 +42,7 @@ public final class PropDetectionTest extends LinearOpMode {
         PhaseTwoBot bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
 
-        telemetry.addLine("Check 1") ;
+        telemetry.addLine("Check 1");
         updateTelemetry(telemetry);
 
 
@@ -50,7 +51,7 @@ public final class PropDetectionTest extends LinearOpMode {
                 bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne)
         ));
 
-        telemetry.addLine("Check 2") ;
+        telemetry.addLine("Check 2");
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(initX, initY, Math.toRadians(initAngle)));
 
@@ -59,7 +60,7 @@ public final class PropDetectionTest extends LinearOpMode {
         waitForStart();  // ======================================================================================
 
 
-        telemetry.addLine("Check 3") ;
+        telemetry.addLine("Check 3");
         updateTelemetry(telemetry);
 
         Actions.runBlocking(drive.actionBuilder(drive.pose)
@@ -69,12 +70,13 @@ public final class PropDetectionTest extends LinearOpMode {
 
         sleep(5000);
 
-        telemetry.addLine("Check 4") ;
+        telemetry.addLine("Check 4");
 
         propPosition = propDetector.propTfod();
         updateTelemetry(telemetry);
 
 //            PoseStorage.currentPose = drive.pose;
-        while (opModeIsActive()) {}
+        while (opModeIsActive()) {
+        }
     }
 }

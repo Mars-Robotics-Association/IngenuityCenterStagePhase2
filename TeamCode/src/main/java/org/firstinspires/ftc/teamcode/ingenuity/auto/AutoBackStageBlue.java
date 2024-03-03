@@ -8,13 +8,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
+import org.firstinspires.ftc.teamcode.PropPosition;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
@@ -30,7 +29,7 @@ public final class AutoBackStageBlue extends LinearOpMode {
 
     public PhaseTwoBot bot;
     MecanumDrive drive;
-    int propPosition;
+    PropPosition propPosition;
     PropDetection propDetector;
 
 
@@ -57,10 +56,10 @@ public final class AutoBackStageBlue extends LinearOpMode {
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
         switch (propPosition) {
-            case 0: // Middle
+            case MIDDLE:
                 autonomousPath = new BackStageBlueCenterPath(this, bot, drive);
                 break;
-            case 1: // Right
+            case RIGHT:
                 autonomousPath = new BackStageBlueRightPath(this, bot, drive);
                 break;
             default: // Left
