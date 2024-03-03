@@ -61,8 +61,10 @@ public abstract class PhaseTwoTeleop extends OpMode {
     private ToggleButtonReader toggleB;
     private PhaseTwoBot bot;
 
+    public static double manualArmPowerScaling = 0.5;
 
-    public String lastBumper = "none";
+
+    private String lastBumper = "none";
 
     protected PhaseTwoTeleop(boolean useSecondController, boolean drivingEnabled) {
         this.useSecondController = useSecondController;
@@ -119,6 +121,9 @@ public abstract class PhaseTwoTeleop extends OpMode {
     @Override
     public void loop() {
         driverOp.readButtons();
+        if (useSecondController) {
+            payloadOp.readButtons();
+        }
 
         double armPos = bot.gripperArm().getArmPosition();
         DriveSpeed driveSpeed = armPos > (bot.gripperArm().armApex + 100) ? DriveSpeed.PRECISION :
@@ -171,7 +176,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
             double netTrigger = payloadOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)
                     - payloadOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
 
-            bot.gripperArm().moveArmManually(netTrigger);
+            bot.gripperArm().moveArmManually(netTrigger * manualArmPowerScaling);
             telemetry.addData("Max arm rate", maxRate);
         }
 
