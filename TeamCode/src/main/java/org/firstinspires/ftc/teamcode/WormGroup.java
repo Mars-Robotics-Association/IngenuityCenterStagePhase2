@@ -27,8 +27,8 @@ public class WormGroup extends WormMotor implements Iterable<WormMotor> {
     public static double Kv = 1.0 / 2476;
     public static double Kp = 0.01;
     public static double Ki = 0.0; // 0.000001;
-    public static double maxVelocity = 2476;
-    public static double maxAccel = 9000;
+    public static double maxVelocity = 2200;
+    public static double maxAccel = 7000;
     public static int profilePosTolerance = 15;
 
     private final WormMotor[] group;

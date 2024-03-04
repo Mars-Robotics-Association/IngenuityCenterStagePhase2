@@ -60,7 +60,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
     private ToggleButtonReader toggleRightStick;
     private ToggleButtonReader toggleB;
     private PhaseTwoBot bot;
-    private static double manualArmPowerScaling;
+    public static double manualArmPowerScaling = 0.85;
     public String lastBumper = "none";
 
     protected PhaseTwoTeleop(boolean useSecondController, boolean drivingEnabled) {
