@@ -1,29 +1,34 @@
-package com.example.meepmeeptesting;
+package org.firstinspires.ftc.teamcode.ingenuity.autoPaths;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 
-enum Alliance {
-    BLUE,
-    RED
-}
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-enum PropPosition {
-    LEFT, MIDDLE, RIGHT
-}
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.PhaseTwoBot;
+import org.firstinspires.ftc.teamcode.PropDetection;
+import org.firstinspires.ftc.teamcode.PropPosition;
+import org.firstinspires.ftc.teamcode.TimeoutAction;
 
-enum StagePosition {
-    FRONT, BACK
-}
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-enum PurplePlacement {
-    FRONT, MIDDLE, BACK
-}
-
-public class TheOneAutoToRuleThemAll {
+@Config
+public class TheOnePathToRuleThemAll {
     private final Alliance alliance;
     private final StagePosition stagePosition;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
+    private final PhaseTwoBot bot;
+    private final MecanumDrive drive;
 
 
     public static final double directionAudience = 180;
@@ -45,17 +50,29 @@ public class TheOneAutoToRuleThemAll {
     public static double parkingX = 58;
     public static double parkingYFront = 8;
     public static double parkingYBack = 56;
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
+    private PropDetection propDetector;
     private PropPosition propPosition;
 
-    public TheOneAutoToRuleThemAll(Alliance alliance, PropPosition propPosition, StagePosition stagePosition) {
+
+    public TheOnePathToRuleThemAll(Alliance alliance, StagePosition stagePosition, HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime elapsedTime) {
         this.alliance = alliance;
-        this.propPosition = propPosition;
         this.stagePosition = stagePosition;
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
 
         initX = stagePosition == StagePosition.BACK ? initXBack : initXFront;
         initY = 61;
         initAngle = 270;
         parkingY = stagePosition == StagePosition.BACK ? parkingYBack : parkingYFront;
+
+        propDetector = new PropDetection(hardwareMap, telemetry);
+        bot = new PhaseTwoBot(hardwareMap, telemetry, elapsedTime);
+        drive = new MecanumDrive(hardwareMap, getStartingPose());
+
+        Actions.runBlocking(new SequentialAction(
+                bot.AutonomousInitActions()
+        ));
     }
 
     public static double reverseAngle(double degrees) {
@@ -86,14 +103,23 @@ public class TheOneAutoToRuleThemAll {
         return Math.toRadians((alliance == Alliance.BLUE ? initAngle : mirrorAngle(initAngle)) + (alliance == Alliance.BLUE ? degreesOffset : 0.0 - degreesOffset));
     }
 
-    public TrajectorySequenceBuilder start(TrajectorySequenceBuilder trajBuilder) {
-        trajBuilder = trajBuilder
-                .splineTo(relCoords(0, -8), relHeading(0))
-                .waitSeconds(1);
-        return afterScan(trajBuilder);
+    public void start(Consumer<Long> sleep, Consumer<Telemetry> updateTelemetry, Supplier<Boolean> opModeIsActive) {
+        Actions.runBlocking(drive.actionBuilder(drive.pose)
+                .splineTo(relCoords(0, -8), relHeading(0))  // Drive closer to the team prop to get a better view
+                .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
+                .build());
+        sleep.accept(1000L);
+        if (opModeIsActive.get()) {
+            propPosition = propDetector.propTfod();
+            updateTelemetry.accept(telemetry);
+        }
+        if (opModeIsActive.get()) {
+            Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
+            Actions.runBlocking(afterScan(drive.actionBuilder(drive.pose)).build());
+        }
     }
 
-    public TrajectorySequenceBuilder afterScan(TrajectorySequenceBuilder trajBuilder) {
+    private TrajectoryActionBuilder afterScan(TrajectoryActionBuilder trajBuilder) {
         // reverse left and right if we're on the red alliance
         propPosition = alliance == Alliance.BLUE ? propPosition :
                 propPosition == PropPosition.LEFT ? PropPosition.RIGHT :
@@ -115,7 +141,7 @@ public class TheOneAutoToRuleThemAll {
         return new Pose2d(relCoords(0, 0), relHeading(0));
     }
 
-    private TrajectorySequenceBuilder driveFromFrontToBack(TrajectorySequenceBuilder trajBuilder) {
+    private TrajectoryActionBuilder driveFromFrontToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
                 .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience))
                 .splineTo(relCoords(-22, relTurn), relHeading(0))
@@ -124,12 +150,12 @@ public class TheOneAutoToRuleThemAll {
                 .splineTo(absCoords(18, centerLaneY), absHeading(directionBackdrop));
     }
 
-    private TrajectorySequenceBuilder driveFromBackToBack(TrajectorySequenceBuilder trajBuilder) {
+    private TrajectoryActionBuilder driveFromBackToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
                 .splineTo(absCoords(23, 58), absHeading(directionBackdrop));
     }
 
-    private TrajectorySequenceBuilder placePurplePixel(TrajectorySequenceBuilder trajBuilder) {
+    private TrajectoryActionBuilder placePurplePixel(TrajectoryActionBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
                 trajBuilder = trajBuilder.splineTo(relCoords(+2, -29), relHeading(20));
@@ -142,37 +168,37 @@ public class TheOneAutoToRuleThemAll {
                 break;
         }
         trajBuilder = trajBuilder
-//                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
+                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
                 .setReversed(true)
                 .splineTo(relCoords(0, relTurn), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
     }
 
-    private TrajectorySequenceBuilder placeYellowPixel(TrajectorySequenceBuilder trajBuilder) {
+    private TrajectoryActionBuilder placeYellowPixel(TrajectoryActionBuilder trajBuilder) {
         double deliveryY = propPosition == PropPosition.MIDDLE ? 35 :
                 propPosition == PropPosition.RIGHT ? 27 : 41;
 
         return trajBuilder
 
                 .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop))
-//                .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
+                .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                 .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop))
-                .waitSeconds(1.5)
-//                .stopAndAdd(new SequentialAction(
-//                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
-//                        bot.gripperArm().gripperOpenAction(),
-//                        new SleepAction(0.5),
-//                        bot.gripperArm().setWristTuckedUp(),
-//                        bot.gripperArm().moveArmToStopAction(1, false)))
+
+                .stopAndAdd(new SequentialAction(
+                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
+                        bot.gripperArm().gripperOpenAction(),
+                        new SleepAction(0.5),
+                        bot.gripperArm().setWristTuckedUp(),
+                        bot.gripperArm().moveArmToStopAction(1, false)))
                 .setReversed(false)
-//                .afterTime(0.0, new SequentialAction(
-//                        bot.gripperArm().moveArmToStopAction(0),
-//                        bot.gripperArm().lowerArmToLimit()
-//                ))
+                .afterTime(0.0, new SequentialAction(
+                        bot.gripperArm().moveArmToStopAction(0),
+                        bot.gripperArm().lowerArmToLimit()
+                ))
                 .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience));
     }
 
-    private TrajectorySequenceBuilder park(TrajectorySequenceBuilder trajBuilder) {
+    private TrajectoryActionBuilder park(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
                 .strafeTo(absCoords(preDeliveryX, parkingY))
                 .setReversed(true)

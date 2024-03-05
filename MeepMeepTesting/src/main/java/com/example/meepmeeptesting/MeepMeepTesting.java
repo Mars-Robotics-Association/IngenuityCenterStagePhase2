@@ -19,7 +19,7 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> auto.main(drive.trajectorySequenceBuilder(auto.getStartingPose())).build());
+                .followTrajectorySequence(drive -> auto.start(drive.trajectorySequenceBuilder(auto.getStartingPose())).build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)

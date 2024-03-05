@@ -17,11 +17,8 @@ import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
 import org.firstinspires.ftc.teamcode.PropPosition;
 import org.firstinspires.ftc.teamcode.TimeoutAction;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.Alliance;
 
-enum Alliance {
-    BLUE,
-    RED
-}
 
 @Config
 @Autonomous(name = "AutoPOC2", group = "Auto 3.0 development")
