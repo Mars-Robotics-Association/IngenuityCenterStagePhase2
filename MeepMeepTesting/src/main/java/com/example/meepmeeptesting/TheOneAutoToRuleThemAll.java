@@ -121,7 +121,7 @@ public class TheOneAutoToRuleThemAll {
                 .splineTo(relCoords(-22, relTurn), relHeading(0))
                 .splineTo(relCoords(-22, -33), relHeading(0))
                 .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
-                .splineTo(absCoords(18, centerLaneY), absHeading(directionBackdrop));
+                .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
     }
 
     private TrajectorySequenceBuilder driveFromBackToBack(TrajectorySequenceBuilder trajBuilder) {
@@ -144,7 +144,7 @@ public class TheOneAutoToRuleThemAll {
         trajBuilder = trajBuilder
 //                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
                 .setReversed(true)
-                .splineTo(relCoords(0, relTurn), absHeading(reverseAngle(initAngle)));
+                .splineTo(relCoords(0, relTurn + 3), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
     }
 
