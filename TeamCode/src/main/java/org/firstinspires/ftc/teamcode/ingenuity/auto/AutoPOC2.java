@@ -114,6 +114,7 @@ public final class AutoPOC2 extends LinearOpMode {
         }
         trajBuilder = trajBuilder
                 .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
+                .afterTime(0.5, new SequentialAction(bot.gripperArm().gripperCloseAction()))
                 .setReversed(true)
                 .splineTo(relCoords(0, -8), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
