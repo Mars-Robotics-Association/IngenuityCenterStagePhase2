@@ -30,7 +30,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -50,7 +52,7 @@ import java.util.List;
 public class PropDetection {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private OpMode myOpMode ;
+
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
     private static final String TFOD_MODEL_ASSET = "Ingenuity-red.tflite";
@@ -62,6 +64,9 @@ public class PropDetection {
        "Blue", "Red"
     };
 
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
+
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
@@ -72,14 +77,16 @@ public class PropDetection {
      */
     private VisionPortal visionPortal;
 
-    public PropDetection(OpMode newOpMode) {
-        myOpMode = newOpMode ;
+    public PropDetection(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
+
         initTfod();
 
         // Wait for the DS start button to be touched.
-        myOpMode.telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        myOpMode.telemetry.addData(">", "Touch Play to start OpMode");
-        myOpMode.telemetry.update();
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.update();
 
         //telemetryTfod();
 
@@ -123,7 +130,7 @@ public class PropDetection {
 
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
-            builder.setCamera(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"));
+            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
@@ -161,17 +168,17 @@ public class PropDetection {
     private void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
-        myOpMode.telemetry.addData("# Objects Detected", currentRecognitions.size());
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-            myOpMode.telemetry.addData(""," ");
-            myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            myOpMode.telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            myOpMode.telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            telemetry.addData(""," ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
 
     }   // end method telemetryTfod()
@@ -183,7 +190,7 @@ public class PropDetection {
         List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
         double highscore = 0.75;
         double highx = 0;
-        myOpMode.telemetry.addData("# Objects Detected", currentRecognitions.size());
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
@@ -195,10 +202,10 @@ public class PropDetection {
 
             }
 
-            myOpMode.telemetry.addData("", " ");
-            myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            myOpMode.telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            myOpMode.telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            telemetry.addData("", " ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
         }   // end for() loop
         // At this point, we know the x value of the prop - highx
@@ -206,7 +213,7 @@ public class PropDetection {
         else if (highx > 320) result = PropPosition.RIGHT;
 
 
-        myOpMode.telemetry.addData("Result =  ", result);
+        telemetry.addData("Result =  ", result);
 
         return result;
 

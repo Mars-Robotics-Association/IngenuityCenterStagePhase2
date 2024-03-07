@@ -36,7 +36,7 @@ public final class AutoPOC extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        propDetector = new PropDetection(this);
+        propDetector = new PropDetection(hardwareMap, telemetry);
         bot = new PhaseTwoBot(hardwareMap, telemetry, new ElapsedTime());
         TranslationalVelConstraint slow = new TranslationalVelConstraint(15);
         Actions.runBlocking(new SequentialAction(
