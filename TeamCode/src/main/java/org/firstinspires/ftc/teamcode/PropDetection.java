@@ -36,6 +36,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.Alliance;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
@@ -61,7 +62,7 @@ public class PropDetection {
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-       "Blue", "Red"
+            "Blue", "Red"
     };
 
     private final HardwareMap hardwareMap;
@@ -90,13 +91,13 @@ public class PropDetection {
 
         //telemetryTfod();
 
-                // Share the CPU.
-                //sleep(20);
+        // Share the CPU.
+        //sleep(20);
     }
 
 
-        // Save more CPU resources when camera is no longer needed.
-        //visionPortal.close();
+    // Save more CPU resources when camera is no longer needed.
+    //visionPortal.close();
 
     //}   // end runOpMode()
 
@@ -108,22 +109,22 @@ public class PropDetection {
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
 
-            // With the following lines commented out, the default TfodProcessor Builder
-            // will load the default model for the season. To define a custom model to load, 
-            // choose one of the following:
-            //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
-            //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-            .setModelAssetName(TFOD_MODEL_ASSET)
-            //.setModelFileName(TFOD_MODEL_FILE)
-            // The following default settings are available to un-comment and edit as needed to 
-            // set parameters for custom models.
-            .setModelLabels(LABELS)
-            .setIsModelTensorFlow2(true)
-            .setIsModelQuantized(true)
-            //.setModelInputSize(300)
-            //.setModelAspectRatio(16.0 / 9.0)
+                // With the following lines commented out, the default TfodProcessor Builder
+                // will load the default model for the season. To define a custom model to load,
+                // choose one of the following:
+                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
+                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)
+                // The following default settings are available to un-comment and edit as needed to
+                // set parameters for custom models.
+                .setModelLabels(LABELS)
+                .setIsModelTensorFlow2(true)
+                .setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                //.setModelAspectRatio(16.0 / 9.0)
 
-            .build();
+                .build();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -172,10 +173,10 @@ public class PropDetection {
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
 
-            telemetry.addData(""," ");
+            telemetry.addData("", " ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
@@ -183,7 +184,7 @@ public class PropDetection {
 
     }   // end method telemetryTfod()
 
-    public PropPosition propTfod() {
+    public PropPosition propTfod(Alliance color) {
         // Return values: -1 = Left, 0 = Middle, 1 = Right
         PropPosition result = PropPosition.MIDDLE;  //Default t0 0 -> Middle
         //List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -192,14 +193,15 @@ public class PropDetection {
         double highx = 0;
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
+        String desiredLabel = color == Alliance.BLUE ? LABELS[0] : LABELS[1];
+
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2;
             double y = (recognition.getTop() + recognition.getBottom()) / 2;
-            if (highscore < recognition.getConfidence()) {
+            if (recognition.getLabel() == desiredLabel && highscore < recognition.getConfidence()) {
                 highscore = recognition.getConfidence();
                 highx = x;
-
             }
 
             telemetry.addData("", " ");

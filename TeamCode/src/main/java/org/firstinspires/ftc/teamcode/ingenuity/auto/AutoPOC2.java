@@ -86,7 +86,7 @@ public final class AutoPOC2 extends LinearOpMode {
                 .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
         sleep(1000);  // Wait for the vision processor to scan
-        propPosition = propDetector.propTfod();
+        propPosition = propDetector.propTfod(Alliance.BLUE);
         updateTelemetry(telemetry);
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));

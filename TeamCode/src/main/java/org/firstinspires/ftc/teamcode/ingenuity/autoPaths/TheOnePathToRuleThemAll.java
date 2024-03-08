@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.ingenuity.autoPaths;
 
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -44,13 +45,13 @@ public class TheOnePathToRuleThemAll {
     public static double initXFront = -36;
     public static double initXBack = 12;
     public static double centerLaneY = 10;
-    public static double relTurn = -14;
-    public static double deliveryX = 48;
-    public static double preDeliveryX = deliveryX - 6.5;
+    public static double relTurn = -23;
+    public static double deliveryX = 45;
+    public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
     public static double parkingYBack = 56;
-    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2110);
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2250);
     private PropDetection propDetector;
     private PropPosition propPosition;
 
@@ -105,12 +106,13 @@ public class TheOnePathToRuleThemAll {
 
     public void start(Consumer<Long> sleep, Consumer<Telemetry> updateTelemetry, Supplier<Boolean> opModeIsActive) {
         Actions.runBlocking(drive.actionBuilder(drive.pose)
-                .splineTo(relCoords(0, -8), relHeading(0))  // Drive closer to the team prop to get a better view
+                .afterTime(0, bot.gripperArm().gripperCloseAction())
+                .splineTo(relCoords(0, -12), relHeading(0))  // Drive closer to the team prop to get a better view
                 .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
         sleep.accept(1000L);
         if (opModeIsActive.get()) {
-            propPosition = propDetector.propTfod();
+            propPosition = propDetector.propTfod(alliance);
             updateTelemetry.accept(telemetry);
         }
         if (opModeIsActive.get()) {
@@ -147,30 +149,34 @@ public class TheOnePathToRuleThemAll {
                 .splineTo(relCoords(-22, relTurn), relHeading(0))
                 .splineTo(relCoords(-22, -33), relHeading(0))
                 .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
-                .splineTo(absCoords(18, centerLaneY), absHeading(directionBackdrop));
+                .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
     }
 
     private TrajectoryActionBuilder driveFromBackToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(absCoords(23, 58), absHeading(directionBackdrop));
+                .splineTo(absCoords(23, 56), absHeading(directionBackdrop));
     }
 
     private TrajectoryActionBuilder placePurplePixel(TrajectoryActionBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+2, -29), relHeading(20));
+                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15));
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-5.5, -23), relHeading(-40));
+                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40));
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(10, -23), relHeading(30));
+                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30));
                 break;
         }
         trajBuilder = trajBuilder
-                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
+                .stopAndAdd(new SequentialAction(
+                        bot.gripperArm().gripperHalfOpenAction(),
+                        bot.gripperArm().gripperCloseAction(),
+                        bot.gripperArm().setWristTuckedUp()
+                ))
                 .setReversed(true)
-                .splineTo(relCoords(0, relTurn), absHeading(reverseAngle(initAngle)));
+                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
     }
 
@@ -186,6 +192,7 @@ public class TheOnePathToRuleThemAll {
 
                 .stopAndAdd(new SequentialAction(
                         new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
+                        new SleepAction(0.25),
                         bot.gripperArm().gripperOpenAction(),
                         new SleepAction(0.5),
                         bot.gripperArm().setWristTuckedUp(),
