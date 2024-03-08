@@ -2,12 +2,16 @@ package org.firstinspires.ftc.teamcode.ingenuity.autoPaths;
 
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,6 +23,7 @@ import org.firstinspires.ftc.teamcode.PropDetection;
 import org.firstinspires.ftc.teamcode.PropPosition;
 import org.firstinspires.ftc.teamcode.TimeoutAction;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -36,6 +41,12 @@ public class TheOnePathToRuleThemAll {
     public static final double directionBackdrop = 0;
     public static final double directionOpponent = 270;
     public static final double directionSelf = 90;
+
+    public static double slowVel = 15;
+    public static double mediumVel = 25;
+
+    private final VelConstraint slow;
+    private final VelConstraint medium;
 
     private final double initX;
     private final double initY;
@@ -74,6 +85,12 @@ public class TheOnePathToRuleThemAll {
         Actions.runBlocking(new SequentialAction(
                 bot.AutonomousInitActions()
         ));
+
+        slow = new MinVelConstraint(Arrays.asList(
+                new TranslationalVelConstraint(slowVel),
+                new AngularVelConstraint(Math.PI / 2.0)
+        ));
+        medium = new TranslationalVelConstraint(mediumVel);
     }
 
     public static double reverseAngle(double degrees) {
@@ -107,7 +124,7 @@ public class TheOnePathToRuleThemAll {
     public void start(Consumer<Long> sleep, Consumer<Telemetry> updateTelemetry, Supplier<Boolean> opModeIsActive) {
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .afterTime(0, bot.gripperArm().gripperCloseAction())
-                .splineTo(relCoords(0, -12), relHeading(0))  // Drive closer to the team prop to get a better view
+                .splineTo(relCoords(0, -12), relHeading(0), medium)  // Drive closer to the team prop to get a better view
                 .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
         sleep.accept(1000L);
@@ -145,28 +162,28 @@ public class TheOnePathToRuleThemAll {
 
     private TrajectoryActionBuilder driveFromFrontToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience))
-                .splineTo(relCoords(-22, relTurn), relHeading(0))
-                .splineTo(relCoords(-22, -33), relHeading(0))
+                .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience), medium)
+                .splineTo(relCoords(-22, relTurn), relHeading(0), medium)
+                .splineTo(relCoords(-22, -33), relHeading(0), medium)
                 .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
                 .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
     }
 
     private TrajectoryActionBuilder driveFromBackToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(absCoords(23, 56), absHeading(directionBackdrop));
+                .splineTo(absCoords(23, 56), absHeading(directionBackdrop), medium);
     }
 
     private TrajectoryActionBuilder placePurplePixel(TrajectoryActionBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15));
+                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15), medium);
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40));
+                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40), medium);
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30));
+                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30), medium);
                 break;
         }
         trajBuilder = trajBuilder
@@ -176,7 +193,7 @@ public class TheOnePathToRuleThemAll {
                         bot.gripperArm().setWristTuckedUp()
                 ))
                 .setReversed(true)
-                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)));
+                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)), medium);
         return trajBuilder;
     }
 
@@ -186,15 +203,15 @@ public class TheOnePathToRuleThemAll {
 
         return trajBuilder
 
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop))
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop), medium) // line up
                 .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop))
+                .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop), slow) // final approach
 
                 .stopAndAdd(new SequentialAction(
-                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
-                        new SleepAction(0.25),
+                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 1.5),
+                        new SleepAction(0.15),
                         bot.gripperArm().gripperOpenAction(),
-                        new SleepAction(0.5),
+                        new SleepAction(0.25),
                         bot.gripperArm().setWristTuckedUp(),
                         bot.gripperArm().moveArmToStopAction(1, false)))
                 .setReversed(false)
@@ -202,7 +219,7 @@ public class TheOnePathToRuleThemAll {
                         bot.gripperArm().moveArmToStopAction(0),
                         bot.gripperArm().lowerArmToLimit()
                 ))
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience));
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience), medium);
     }
 
     private TrajectoryActionBuilder park(TrajectoryActionBuilder trajBuilder) {
