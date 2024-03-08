@@ -39,9 +39,9 @@ public class TheOneAutoToRuleThemAll {
     public static double initXFront = -36;
     public static double initXBack = 12;
     public static double centerLaneY = 10;
-    public static double relTurn = -14;
-    public static double deliveryX = 48;
-    public static double preDeliveryX = deliveryX - 6.5;
+    public static double relTurn = -23;
+    public static double deliveryX = 45;
+    public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
     public static double parkingYBack = 56;
@@ -88,7 +88,7 @@ public class TheOneAutoToRuleThemAll {
 
     public TrajectorySequenceBuilder start(TrajectorySequenceBuilder trajBuilder) {
         trajBuilder = trajBuilder
-                .splineTo(relCoords(0, -8), relHeading(0))
+                .splineTo(relCoords(0, -12), relHeading(0))
                 .waitSeconds(1);
         return afterScan(trajBuilder);
     }
@@ -117,6 +117,7 @@ public class TheOneAutoToRuleThemAll {
 
     private TrajectorySequenceBuilder driveFromFrontToBack(TrajectorySequenceBuilder trajBuilder) {
         return trajBuilder
+                .waitSeconds(1)
                 .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience))
                 .splineTo(relCoords(-22, relTurn), relHeading(0))
                 .splineTo(relCoords(-22, -33), relHeading(0))
@@ -126,25 +127,25 @@ public class TheOneAutoToRuleThemAll {
 
     private TrajectorySequenceBuilder driveFromBackToBack(TrajectorySequenceBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(absCoords(23, 58), absHeading(directionBackdrop));
+                .splineTo(absCoords(23, 56), absHeading(directionBackdrop));
     }
 
     private TrajectorySequenceBuilder placePurplePixel(TrajectorySequenceBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+2, -29), relHeading(20));
+                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15));
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-5.5, -23), relHeading(-40));
+                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40));
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(10, -23), relHeading(30));
+                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30));
                 break;
         }
         trajBuilder = trajBuilder
 //                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
                 .setReversed(true)
-                .splineTo(relCoords(0, relTurn + 3), absHeading(reverseAngle(initAngle)));
+                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
     }
 

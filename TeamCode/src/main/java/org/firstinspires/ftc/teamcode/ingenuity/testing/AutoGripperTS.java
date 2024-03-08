@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
 import org.firstinspires.ftc.teamcode.PropPosition;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.Alliance;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
@@ -48,7 +49,7 @@ public final class AutoGripperTS extends LinearOpMode {
 
 
         sleep(1000);  // TODO: Lower this for Backstage
-        propPosition = propDetector.propTfod();
+        propPosition = propDetector.propTfod(Alliance.BLUE);
         updateTelemetry(telemetry);
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));

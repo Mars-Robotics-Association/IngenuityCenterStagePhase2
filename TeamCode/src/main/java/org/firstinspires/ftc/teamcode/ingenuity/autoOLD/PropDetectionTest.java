@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
 import org.firstinspires.ftc.teamcode.PropPosition;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.Alliance;
 
 @Config
 @Autonomous(name = "Prop Detection Test", group = "Auto 3.0 development")
@@ -72,7 +73,7 @@ public final class PropDetectionTest extends LinearOpMode {
 
         telemetry.addLine("Check 4") ;
 
-        propPosition = propDetector.propTfod();
+        propPosition = propDetector.propTfod(Alliance.BLUE);
         updateTelemetry(telemetry);
 
 //            PoseStorage.currentPose = drive.pose;

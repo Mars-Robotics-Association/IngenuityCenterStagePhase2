@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.PropDetection;
 import org.firstinspires.ftc.teamcode.PropPosition;
+import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.Alliance;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.AutoPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueCenterPath;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.BackStageBlueLeftPath;
@@ -52,7 +53,7 @@ public final class AutoPOC extends LinearOpMode {
                 .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
         sleep(3000);  // Wait for the vision processor to scan TODO: Lower this for Backstage
-        propPosition = propDetector.propTfod();   // Get the prop position: -1 = Left, 0 = Middle, 1 = Right
+        propPosition = propDetector.propTfod(Alliance.BLUE);   // Get the prop position: -1 = Left, 0 = Middle, 1 = Right
         updateTelemetry(telemetry);
 
         Actions.runBlocking(bot.gripperArm().moveArmToPositionAction(PhaseTwoBot.armDropOne));
