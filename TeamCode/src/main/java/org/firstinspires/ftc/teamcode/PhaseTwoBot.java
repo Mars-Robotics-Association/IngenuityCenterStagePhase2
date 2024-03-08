@@ -13,6 +13,7 @@ import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.RevIMU;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.util.Timing;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -60,10 +61,21 @@ public class PhaseTwoBot {
 
     private boolean armEncoderWasReset = false;
 
+    DigitalChannel ledRed ;
+    DigitalChannel ledGreen ;
+
     public PhaseTwoBot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.runtime = runtime;
+
+
+        ledRed = hardwareMap.get(DigitalChannel.class, "ledRed");
+        ledGreen = hardwareMap.get(DigitalChannel.class, "ledGreen");
+        ledRed.setMode(DigitalChannel.Mode.OUTPUT);
+        ledGreen.setMode(DigitalChannel.Mode.OUTPUT);
+        ledGreen.setState(true);
+
     }
 
     public Action AutonomousInitActions() {
@@ -164,7 +176,6 @@ public class PhaseTwoBot {
 
             gripper = hardwareMap.servo.get("gripper");
             wrist = hardwareMap.servo.get("wrist");
-
 
             armMotor.setPositionPI(positionCoefficient, positionIntegralCoeff);
             armMotor.setPositionTolerance(positionTolerance);
