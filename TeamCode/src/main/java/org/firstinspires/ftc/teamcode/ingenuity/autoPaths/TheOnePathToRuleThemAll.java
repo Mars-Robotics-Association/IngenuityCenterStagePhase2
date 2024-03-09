@@ -57,12 +57,12 @@ public class TheOnePathToRuleThemAll {
     public static double initXBack = 12;
     public static double centerLaneY = 10;
     public static double relTurn = -23;
-    public static double deliveryX = 47.5;
+    public static double deliveryX = 46;
     public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
     public static double parkingYBack = 56;
-    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2250);
+    public static int backDelivery = Math.min(PhaseTwoBot.armMax, 2350);
     private PropDetection propDetector;
     private PropPosition propPosition;
 
