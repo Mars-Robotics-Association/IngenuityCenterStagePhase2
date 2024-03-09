@@ -57,7 +57,7 @@ public class TheOnePathToRuleThemAll {
     public static double initXBack = 12;
     public static double centerLaneY = 10;
     public static double relTurn = -23;
-    public static double deliveryX = 45;
+    public static double deliveryX = 47.5;
     public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
@@ -90,7 +90,10 @@ public class TheOnePathToRuleThemAll {
                 new TranslationalVelConstraint(slowVel),
                 new AngularVelConstraint(Math.PI / 2.0)
         ));
-        medium = new TranslationalVelConstraint(mediumVel);
+        medium = new MinVelConstraint(Arrays.asList(
+                new TranslationalVelConstraint(mediumVel),
+                new AngularVelConstraint(Math.PI * 0.55)
+        ));
     }
 
     public static double reverseAngle(double degrees) {
@@ -122,6 +125,7 @@ public class TheOnePathToRuleThemAll {
     }
 
     public void start(Consumer<Long> sleep, Consumer<Telemetry> updateTelemetry, Supplier<Boolean> opModeIsActive) {
+        Actions.runBlocking(new TimeoutAction(bot.gripperArm().lowerArmToLimit(), 1.0));
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .afterTime(0, bot.gripperArm().gripperCloseAction())
                 .splineTo(relCoords(0, -12), relHeading(0), medium)  // Drive closer to the team prop to get a better view
@@ -198,8 +202,8 @@ public class TheOnePathToRuleThemAll {
     }
 
     private TrajectoryActionBuilder placeYellowPixel(TrajectoryActionBuilder trajBuilder) {
-        double deliveryY = propPosition == PropPosition.MIDDLE ? 35 :
-                propPosition == PropPosition.RIGHT ? 27 : 41;
+        double deliveryY = propPosition == PropPosition.MIDDLE ? 34 :
+                propPosition == PropPosition.RIGHT ? 26 : 40;
 
         return trajBuilder
 
@@ -226,7 +230,7 @@ public class TheOnePathToRuleThemAll {
         return trajBuilder
                 .strafeTo(absCoords(preDeliveryX, parkingY))
                 .setReversed(true)
-                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop));
+                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop), medium);
     }
 
 }

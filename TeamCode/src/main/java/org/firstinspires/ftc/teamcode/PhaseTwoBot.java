@@ -34,7 +34,7 @@ public class PhaseTwoBot {
     public static double wristFlatZero = 0.27;
     public static double wristTuckedUp = 0.75;
     public static double gripperOpenPosition = 0.57;
-    public static double gripperHalfOpenPosition = .525;  // .515
+    public static double gripperHalfOpenPosition = .53;  // .515
     public static double gripperClosedPosition = .45;
     public static double wristPosition = 0.35;
     public static double gripperPosition = gripperOpenPosition;
@@ -47,7 +47,7 @@ public class PhaseTwoBot {
     public static double wristRearPickUp = 0.67;
     public static int armMax = 2900;
 
-    public static int armDropOne = 60;
+    public static int armDropOne = 85;
 
 
     public static double positionCoefficient = 0.00075;
