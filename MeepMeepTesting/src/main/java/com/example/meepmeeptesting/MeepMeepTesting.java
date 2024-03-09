@@ -14,7 +14,7 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-        TheOneAutoToRuleThemAll auto = new TheOneAutoToRuleThemAll(Alliance.BLUE, PropPosition.LEFT, StagePosition.BACK);
+        TheOneAutoToRuleThemAll auto = new TheOneAutoToRuleThemAll(Alliance.BLUE, PropPosition.RIGHT, StagePosition.FRONT);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width

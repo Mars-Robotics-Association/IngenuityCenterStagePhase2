@@ -2,7 +2,12 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 enum Alliance {
     BLUE,
@@ -31,6 +36,12 @@ public class TheOneAutoToRuleThemAll {
     public static final double directionOpponent = 270;
     public static final double directionSelf = 90;
 
+    public static double slowVel = 15;
+    public static double mediumVel = 25;
+
+    private final TrajectoryVelocityConstraint slow;
+    private final TrajectoryVelocityConstraint medium;
+
     private final double initX;
     private final double initY;
     private final double initAngle;
@@ -40,7 +51,7 @@ public class TheOneAutoToRuleThemAll {
     public static double initXBack = 12;
     public static double centerLaneY = 10;
     public static double relTurn = -23;
-    public static double deliveryX = 47.5;
+    public static double deliveryX = 46;
     public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
@@ -56,6 +67,19 @@ public class TheOneAutoToRuleThemAll {
         initY = 61;
         initAngle = 270;
         parkingY = stagePosition == StagePosition.BACK ? parkingYBack : parkingYFront;
+
+        slow = new TrajectoryVelocityConstraint() {
+            @Override
+            public double get(double v, @NotNull Pose2d pose2d, @NotNull Pose2d pose2d1, @NotNull Pose2d pose2d2) {
+                return 15;
+            }
+        };
+        medium = new TrajectoryVelocityConstraint() {
+            @Override
+            public double get(double v, @NotNull Pose2d pose2d, @NotNull Pose2d pose2d1, @NotNull Pose2d pose2d2) {
+                return 25;
+            }
+        };
     }
 
     public static double reverseAngle(double degrees) {
@@ -88,7 +112,7 @@ public class TheOneAutoToRuleThemAll {
 
     public TrajectorySequenceBuilder start(TrajectorySequenceBuilder trajBuilder) {
         trajBuilder = trajBuilder
-                .splineTo(relCoords(0, -12), relHeading(0))
+                .splineTo(relCoords(0, -12), relHeading(0), medium, null)  // Drive closer to the team prop to get a better view
                 .waitSeconds(1);
         return afterScan(trajBuilder);
     }
@@ -117,15 +141,14 @@ public class TheOneAutoToRuleThemAll {
 
     private TrajectorySequenceBuilder driveFromFrontToBack(TrajectorySequenceBuilder trajBuilder) {
         trajBuilder = trajBuilder
-//                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
                 .setReversed(true)
                 .splineTo(relCoords(0, -12), absHeading(reverseAngle(initAngle)))
                 .setReversed(false);
 
         if (propPosition == PropPosition.MIDDLE) {
             trajBuilder = trajBuilder
-                    .splineTo(absCoords(initX - 12, 24), relHeading(-1))
-                    .splineTo(absCoords(initX - 20, centerLaneY), absHeading(directionAudience));
+                    .splineTo(absCoords(initX - 12, 24), relHeading(-1), medium, null)
+                    .splineTo(absCoords(initX - 20, centerLaneY), absHeading(directionAudience), medium, null);
         } else {
             trajBuilder = trajBuilder
                     .splineTo(absCoords(initX, 24), absHeading(directionOpponent))
@@ -151,15 +174,15 @@ public class TheOneAutoToRuleThemAll {
         switch (propPosition) {
             case MIDDLE:
                 trajBuilder = trajBuilder
-                        .splineTo(relCoords(+1.5, -29), relHeading(15));
+                        .splineTo(relCoords(+1.5, -29), relHeading(15), medium, null);
                 break;
             case RIGHT:
                 trajBuilder = trajBuilder
-                        .splineTo(relCoords(-4.5, -23), relHeading(-40));
+                        .splineTo(relCoords(-4.5, -22), relHeading(-40), medium, null);
                 break;
             default:
                 trajBuilder = trajBuilder
-                        .splineTo(relCoords(6, -23), relHeading(30));
+                        .splineTo(relCoords(6, -23), relHeading(30), medium, null);
                 break;
         }
 
@@ -172,9 +195,9 @@ public class TheOneAutoToRuleThemAll {
 
         return trajBuilder
 
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop))
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop), medium, null) // line up
 //                .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop))
+                .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop), slow, null) // final approach
                 .waitSeconds(1.5)
 //                .stopAndAdd(new SequentialAction(
 //                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
@@ -187,14 +210,14 @@ public class TheOneAutoToRuleThemAll {
 //                        bot.gripperArm().moveArmToStopAction(0),
 //                        bot.gripperArm().lowerArmToLimit()
 //                ))
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience));
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience), medium, null);
     }
 
     private TrajectorySequenceBuilder park(TrajectorySequenceBuilder trajBuilder) {
         return trajBuilder
                 .strafeTo(absCoords(preDeliveryX, parkingY))
                 .setReversed(true)
-                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop));
+                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop), medium, null);
     }
 
 }

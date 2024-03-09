@@ -165,29 +165,49 @@ public class TheOnePathToRuleThemAll {
     }
 
     private TrajectoryActionBuilder driveFromFrontToBack(TrajectoryActionBuilder trajBuilder) {
-        return trajBuilder
-                .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience), medium)
-                .splineTo(relCoords(-22, relTurn), relHeading(0), medium)
-                .splineTo(relCoords(-22, -33), relHeading(0), medium)
-                .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
+        trajBuilder = trajBuilder
+                .setReversed(true)
+                .splineTo(relCoords(0, -12), absHeading(reverseAngle(initAngle)))
+                .setReversed(false);
+
+        if (propPosition == PropPosition.MIDDLE) {
+            trajBuilder = trajBuilder
+                    .splineTo(absCoords(initX - 12, 24), relHeading(-1), medium)
+                    .splineTo(absCoords(initX - 20, centerLaneY), absHeading(directionAudience), medium);
+        } else {
+            trajBuilder = trajBuilder
+                    .splineTo(absCoords(initX, 24), absHeading(directionOpponent), medium)
+                    .splineTo(absCoords(initX - 12, centerLaneY), absHeading(directionAudience), medium);
+        }
+        trajBuilder = trajBuilder
+                .setReversed(true)
+                .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop), medium)
                 .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
+        return trajBuilder;
     }
 
     private TrajectoryActionBuilder driveFromBackToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(absCoords(23, 56), absHeading(directionBackdrop), medium);
+                .setReversed(true)
+                .splineTo(
+                        propPosition == PropPosition.RIGHT ? absCoords(21, 42) :
+                                propPosition == PropPosition.MIDDLE ? absCoords(21, 42) :
+                                        absCoords(18, 55), absHeading(directionBackdrop));
     }
 
     private TrajectoryActionBuilder placePurplePixel(TrajectoryActionBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15), medium);
+                trajBuilder = trajBuilder
+                        .splineTo(relCoords(+1.5, -29), relHeading(15), medium);
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40), medium);
+                trajBuilder = trajBuilder
+                        .splineTo(relCoords(-4.5, -22), relHeading(-40), medium);
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30), medium);
+                trajBuilder = trajBuilder
+                        .splineTo(relCoords(6, -23), relHeading(30), medium);
                 break;
         }
         trajBuilder = trajBuilder
@@ -195,20 +215,18 @@ public class TheOnePathToRuleThemAll {
                         bot.gripperArm().gripperHalfOpenAction(),
                         bot.gripperArm().gripperCloseAction(),
                         bot.gripperArm().setWristTuckedUp()
-                ))
-                .setReversed(true)
-                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)), medium);
+                ));
         return trajBuilder;
     }
 
     private TrajectoryActionBuilder placeYellowPixel(TrajectoryActionBuilder trajBuilder) {
-        double deliveryY = propPosition == PropPosition.MIDDLE ? 34 :
-                propPosition == PropPosition.RIGHT ? 26 : 40;
+        double deliveryY = propPosition == PropPosition.MIDDLE ? 35 :
+                propPosition == PropPosition.RIGHT ? 27 : 41;
 
         return trajBuilder
 
                 .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop), medium) // line up
-                .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
+                .afterTime(1.0, new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true), 2.0))
                 .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop), slow) // final approach
 
                 .stopAndAdd(new SequentialAction(
