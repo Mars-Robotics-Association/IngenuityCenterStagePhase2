@@ -474,15 +474,15 @@ public class PhaseTwoBot {
         }
 
         private Action moveGripperAction(double newPosition, int timeMs) {
-            if (gripperPosition != newPosition) {
+//            if (gripperPosition != newPosition) {
                 gripperPosition = newPosition;
                 return new SequentialAction(
                         new InstantAction(() -> gripper.setPosition(newPosition)),
                         new SleepAction(timeMs / 1000.0)
                 );
-            } else {
-                return new NullAction();
-            }
+//            } else {
+//                return new NullAction();
+//            }
         }
 
         public Action gripperCloseAction() {
