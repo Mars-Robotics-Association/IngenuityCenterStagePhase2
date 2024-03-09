@@ -40,7 +40,7 @@ public class TheOneAutoToRuleThemAll {
     public static double initXBack = 12;
     public static double centerLaneY = 10;
     public static double relTurn = -23;
-    public static double deliveryX = 45;
+    public static double deliveryX = 47.5;
     public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
@@ -116,36 +116,53 @@ public class TheOneAutoToRuleThemAll {
     }
 
     private TrajectorySequenceBuilder driveFromFrontToBack(TrajectorySequenceBuilder trajBuilder) {
-        return trajBuilder
-                .waitSeconds(1)
-                .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience))
-                .splineTo(relCoords(-22, relTurn), relHeading(0))
-                .splineTo(relCoords(-22, -33), relHeading(0))
+        trajBuilder = trajBuilder
+//                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
+                .setReversed(true)
+                .splineTo(relCoords(0, -12), absHeading(reverseAngle(initAngle)))
+                .setReversed(false);
+
+        if (propPosition == PropPosition.MIDDLE) {
+            trajBuilder = trajBuilder
+                    .splineTo(absCoords(initX - 12, 24), relHeading(-1))
+                    .splineTo(absCoords(initX - 20, centerLaneY), absHeading(directionAudience));
+        } else {
+            trajBuilder = trajBuilder
+                    .splineTo(absCoords(initX, 24), absHeading(directionOpponent))
+                    .splineTo(absCoords(initX - 12, centerLaneY), absHeading(directionAudience));
+        }
+        trajBuilder = trajBuilder
+                .setReversed(true)
                 .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
                 .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
+        return trajBuilder;
     }
 
     private TrajectorySequenceBuilder driveFromBackToBack(TrajectorySequenceBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(absCoords(23, 56), absHeading(directionBackdrop));
+                .setReversed(true)
+                .splineTo(
+                        propPosition == PropPosition.RIGHT ? absCoords(21, 42) :
+                                propPosition == PropPosition.MIDDLE ? absCoords(21, 42) :
+                                        absCoords(18, 55), absHeading(directionBackdrop));
     }
 
     private TrajectorySequenceBuilder placePurplePixel(TrajectorySequenceBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15));
+                trajBuilder = trajBuilder
+                        .splineTo(relCoords(+1.5, -29), relHeading(15));
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40));
+                trajBuilder = trajBuilder
+                        .splineTo(relCoords(-4.5, -23), relHeading(-40));
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30));
+                trajBuilder = trajBuilder
+                        .splineTo(relCoords(6, -23), relHeading(30));
                 break;
         }
-        trajBuilder = trajBuilder
-//                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
-                .setReversed(true)
-                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)));
+
         return trajBuilder;
     }
 
