@@ -150,11 +150,9 @@ public class TheOnePathToRuleThemAll {
                                 PropPosition.MIDDLE;
 
         trajBuilder = placePurplePixel(trajBuilder);
-        if (stagePosition == StagePosition.FRONT) {
-            trajBuilder = driveFromFrontToBack(trajBuilder);
-        } else {
-            trajBuilder = driveFromBackToBack(trajBuilder);
-        }
+        trajBuilder = stagePosition == StagePosition.FRONT ?
+                driveFromFrontToBack(trajBuilder) :
+                driveFromBackToBack(trajBuilder);
         trajBuilder = placeYellowPixel(trajBuilder);
         trajBuilder = park(trajBuilder);
         return trajBuilder;
@@ -226,11 +224,11 @@ public class TheOnePathToRuleThemAll {
         return trajBuilder
 
                 .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop), medium) // line up
-                .afterTime(1.0, new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true), 2.0))
+                .stopAndAdd(new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true), 2.0))
                 .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop), slow) // final approach
 
                 .stopAndAdd(new SequentialAction(
-                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 1.5),
+                        //new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 1.5),
                         new SleepAction(0.15),
                         bot.gripperArm().gripperOpenAction(),
                         new SleepAction(0.25),
