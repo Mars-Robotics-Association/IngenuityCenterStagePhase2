@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.MinVelConstraint;
+import com.acmerobotics.roadrunner.NullAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -150,9 +151,11 @@ public class TheOnePathToRuleThemAll {
                                 PropPosition.MIDDLE;
 
         trajBuilder = placePurplePixel(trajBuilder);
-        trajBuilder = stagePosition == StagePosition.FRONT ?
-                driveFromFrontToBack(trajBuilder) :
-                driveFromBackToBack(trajBuilder);
+        if (stagePosition == StagePosition.FRONT) {
+            trajBuilder = driveFromFrontToBack(trajBuilder);
+        } else {
+            trajBuilder = driveFromBackToBack(trajBuilder);
+        }
         trajBuilder = placeYellowPixel(trajBuilder);
         trajBuilder = park(trajBuilder);
         return trajBuilder;
@@ -224,11 +227,13 @@ public class TheOnePathToRuleThemAll {
         return trajBuilder
 
                 .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop), medium) // line up
-                .stopAndAdd(new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true), 2.0))
+                .stopAndAdd(new NullAction())
                 .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop), slow) // final approach
+                .afterTime(0, new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true), 2.0))
+
 
                 .stopAndAdd(new SequentialAction(
-                        //new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 1.5),
+                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 1.5),
                         new SleepAction(0.15),
                         bot.gripperArm().gripperOpenAction(),
                         new SleepAction(0.25),
