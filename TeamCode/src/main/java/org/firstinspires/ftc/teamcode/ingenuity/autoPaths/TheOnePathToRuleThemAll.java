@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.ingenuity.autoPaths;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -42,11 +41,23 @@ public class TheOnePathToRuleThemAll {
     public static final double directionOpponent = 270;
     public static final double directionSelf = 90;
 
-    public static double slowVel = 15;
-    public static double mediumVel = 25;
+    public static double purpleXMiddle = 1.5;
+    public static double purpleXRight = -4.5;
+    public static double purpleXLeft = 6;
+    public static double purpleYSide = -23;
+    public static double purpleYMiddle = -29;
+
+    public static double yellowLeft = 40;
+    public static double yellowMiddle = 34;
+    public static double yellowRight = 26;
+
+    public static long scanTime = 700L;
+
+    public static double slowVel = 10;
+    public static double fastVel = 60;
 
     private final VelConstraint slow;
-    private final VelConstraint medium;
+    private final VelConstraint fast;
 
     private final double initX;
     private final double initY;
@@ -56,7 +67,7 @@ public class TheOnePathToRuleThemAll {
     public static double initXFront = -36;
     public static double initXBack = 12;
     public static double centerLaneY = 10;
-    public static double relTurn = -23;
+    public static double relTurn = -14;
     public static double deliveryX = 46;
     public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
@@ -90,9 +101,9 @@ public class TheOnePathToRuleThemAll {
                 new TranslationalVelConstraint(slowVel),
                 new AngularVelConstraint(Math.PI / 2.0)
         ));
-        medium = new MinVelConstraint(Arrays.asList(
-                new TranslationalVelConstraint(mediumVel),
-                new AngularVelConstraint(Math.PI * 0.55)
+        fast = new MinVelConstraint(Arrays.asList(
+                new TranslationalVelConstraint(fastVel),
+                new AngularVelConstraint(Math.PI * 1)
         ));
     }
 
@@ -128,10 +139,10 @@ public class TheOnePathToRuleThemAll {
         Actions.runBlocking(new TimeoutAction(bot.gripperArm().lowerArmToLimit(), 1.0));
         Actions.runBlocking(drive.actionBuilder(drive.pose)
                 .afterTime(0, bot.gripperArm().gripperCloseAction())
-                .splineTo(relCoords(0, -12), relHeading(0), medium)  // Drive closer to the team prop to get a better view
+                .splineTo(relCoords(0, -12), relHeading(0))  // Drive closer to the team prop to get a better view
                 .afterTime(0, bot.gripperArm().setWristFlatZero())      // Put the gripper wrist in ground position
                 .build());
-        sleep.accept(1000L);
+        sleep.accept(scanTime);
         if (opModeIsActive.get()) {
             propPosition = propDetector.propTfod(alliance);
             updateTelemetry.accept(telemetry);
@@ -166,28 +177,28 @@ public class TheOnePathToRuleThemAll {
 
     private TrajectoryActionBuilder driveFromFrontToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience), medium)
-                .splineTo(relCoords(-22, relTurn), relHeading(0), medium)
-                .splineTo(relCoords(-22, -33), relHeading(0), medium)
+                .splineTo(relCoords(-11, relTurn + 10), absHeading(directionAudience))
+                .splineTo(relCoords(-22, relTurn), relHeading(0))
+                .splineTo(relCoords(-22, -33), relHeading(0))
                 .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
                 .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
     }
 
     private TrajectoryActionBuilder driveFromBackToBack(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .splineTo(absCoords(23, 56), absHeading(directionBackdrop), medium);
+                .splineTo(absCoords(23, 56), absHeading(directionBackdrop));
     }
 
     private TrajectoryActionBuilder placePurplePixel(TrajectoryActionBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15), medium);
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXMiddle, purpleYMiddle), relHeading(15));
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40), medium);
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXRight, purpleYSide), relHeading(-50));
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30), medium);
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXLeft, purpleYSide), relHeading(60));
                 break;
         }
         trajBuilder = trajBuilder
@@ -197,17 +208,17 @@ public class TheOnePathToRuleThemAll {
                         bot.gripperArm().setWristTuckedUp()
                 ))
                 .setReversed(true)
-                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)), medium);
+                .splineTo(relCoords(0, -12), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
     }
 
     private TrajectoryActionBuilder placeYellowPixel(TrajectoryActionBuilder trajBuilder) {
-        double deliveryY = propPosition == PropPosition.MIDDLE ? 34 :
-                propPosition == PropPosition.RIGHT ? 26 : 40;
+        double deliveryY = propPosition == PropPosition.MIDDLE ? yellowMiddle :
+                propPosition == PropPosition.RIGHT ? yellowRight : yellowLeft;
 
         return trajBuilder
 
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop), medium) // line up
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop)) // line up
                 .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
                 .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop), slow) // final approach
 
@@ -223,14 +234,14 @@ public class TheOnePathToRuleThemAll {
                         bot.gripperArm().moveArmToStopAction(0),
                         bot.gripperArm().lowerArmToLimit()
                 ))
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience), medium);
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionAudience));
     }
 
     private TrajectoryActionBuilder park(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
                 .strafeTo(absCoords(preDeliveryX, parkingY))
                 .setReversed(true)
-                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop), medium);
+                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop));
     }
 
 }

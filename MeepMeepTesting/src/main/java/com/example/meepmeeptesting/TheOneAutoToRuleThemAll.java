@@ -31,6 +31,16 @@ public class TheOneAutoToRuleThemAll {
     public static final double directionOpponent = 270;
     public static final double directionSelf = 90;
 
+    public static double purpleXMiddle = 1.5;
+    public static double purpleXRight = -4.5;
+    public static double purpleXLeft = 6;
+    public static double purpleYSide = -23;
+    public static double purpleYMiddle = -29;
+
+    public static double yellowLeft = 40;
+    public static double yellowMiddle = 34;
+    public static double yellowRight = 26;
+
     private final double initX;
     private final double initY;
     private final double initAngle;
@@ -39,8 +49,8 @@ public class TheOneAutoToRuleThemAll {
     public static double initXFront = -36;
     public static double initXBack = 12;
     public static double centerLaneY = 10;
-    public static double relTurn = -23;
-    public static double deliveryX = 45;
+    public static double relTurn = -14;
+    public static double deliveryX = 46;
     public static double preDeliveryX = deliveryX - 4;
     public static double parkingX = 58;
     public static double parkingYFront = 8;
@@ -133,36 +143,36 @@ public class TheOneAutoToRuleThemAll {
     private TrajectorySequenceBuilder placePurplePixel(TrajectorySequenceBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(+1.5, -29), relHeading(15));
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXMiddle, purpleYMiddle), relHeading(15));
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(-4.5, -23), relHeading(-40));
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXRight, purpleYSide), relHeading(-40));
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(6, -23), relHeading(30));
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXLeft, purpleYSide), relHeading(60));
                 break;
         }
         trajBuilder = trajBuilder
 //                .afterTime(0, new SequentialAction(bot.gripperArm().gripperHalfOpenAction()))
                 .setReversed(true)
-                .splineTo(relCoords(0, relTurn + 10), absHeading(reverseAngle(initAngle)));
+                .splineTo(relCoords(0, -12), absHeading(reverseAngle(initAngle)));
         return trajBuilder;
     }
 
     private TrajectorySequenceBuilder placeYellowPixel(TrajectorySequenceBuilder trajBuilder) {
-        double deliveryY = propPosition == PropPosition.MIDDLE ? 35 :
-                propPosition == PropPosition.RIGHT ? 27 : 41;
+        double deliveryY = propPosition == PropPosition.MIDDLE ? yellowMiddle :
+                propPosition == PropPosition.RIGHT ? yellowRight : yellowLeft;
 
         return trajBuilder
 
-                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop))
+                .splineTo(absCoords(preDeliveryX, deliveryY), absHeading(directionBackdrop)) // line up
 //                .afterTime(0.15, bot.gripperArm().moveArmToPositionAction(backDelivery, "start moving", true))
-                .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop))
+                .splineTo(absCoords(deliveryX, deliveryY), absHeading(directionBackdrop)) // final approach
                 .waitSeconds(1.5)
 //                .stopAndAdd(new SequentialAction(
 //                        new TimeoutAction(bot.gripperArm().moveArmToPositionAction(backDelivery, "finish moving", true), 2.5),
 //                        bot.gripperArm().gripperOpenAction(),
-//                        new SleepAction(0.5),
+//                        new SleepAction(0.25),
 //                        bot.gripperArm().setWristTuckedUp(),
 //                        bot.gripperArm().moveArmToStopAction(1, false)))
                 .setReversed(false)

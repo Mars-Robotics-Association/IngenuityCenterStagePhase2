@@ -61,8 +61,8 @@ public class PhaseTwoBot {
 
     private boolean armEncoderWasReset = false;
 
-    DigitalChannel ledRed ;
-    DigitalChannel ledGreen ;
+    DigitalChannel ledRed;
+    DigitalChannel ledGreen;
 
     public PhaseTwoBot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime) {
         this.hardwareMap = hardwareMap;
@@ -70,11 +70,11 @@ public class PhaseTwoBot {
         this.runtime = runtime;
 
 
-        ledRed = hardwareMap.get(DigitalChannel.class, "ledRed");
-        ledGreen = hardwareMap.get(DigitalChannel.class, "ledGreen");
-        ledRed.setMode(DigitalChannel.Mode.OUTPUT);
-        ledGreen.setMode(DigitalChannel.Mode.OUTPUT);
-        ledGreen.setState(true);
+//        ledRed = hardwareMap.get(DigitalChannel.class, "ledRed");
+//        ledGreen = hardwareMap.get(DigitalChannel.class, "ledGreen");
+//        ledRed.setMode(DigitalChannel.Mode.OUTPUT);
+//        ledGreen.setMode(DigitalChannel.Mode.OUTPUT);
+//        ledGreen.setState(true);
 
     }
 
@@ -475,11 +475,11 @@ public class PhaseTwoBot {
 
         private Action moveGripperAction(double newPosition, int timeMs) {
 //            if (gripperPosition != newPosition) {
-                gripperPosition = newPosition;
-                return new SequentialAction(
-                        new InstantAction(() -> gripper.setPosition(newPosition)),
-                        new SleepAction(timeMs / 1000.0)
-                );
+            gripperPosition = newPosition;
+            return new SequentialAction(
+                    new InstantAction(() -> gripper.setPosition(newPosition)),
+                    new SleepAction(timeMs / 1000.0)
+            );
 //            } else {
 //                return new NullAction();
 //            }
