@@ -42,9 +42,9 @@ public class TheOnePathToRuleThemAll {
     public static final double directionSelf = 90;
 
     public static double purpleXMiddle = 1.5;
-    public static double purpleXRight = -4.5;
-    public static double purpleXLeft = 6;
-    public static double purpleYSide = -23;
+    public static double purpleXRight = -2;
+    public static double purpleXLeft = 2;
+    public static double purpleYSide = -24;
     public static double purpleYMiddle = -29;
 
     public static double yellowLeft = 40;
@@ -105,6 +105,9 @@ public class TheOnePathToRuleThemAll {
                 new TranslationalVelConstraint(fastVel),
                 new AngularVelConstraint(Math.PI * 1)
         ));
+
+        // ----------  Set LEDs -----------
+        //bot.ledsGreen();
     }
 
     public static double reverseAngle(double degrees) {
