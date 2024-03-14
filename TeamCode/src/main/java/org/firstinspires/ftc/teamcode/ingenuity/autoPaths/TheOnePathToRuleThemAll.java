@@ -46,6 +46,10 @@ public class TheOnePathToRuleThemAll {
     public static double purpleXLeft = 2;
     public static double purpleYSide = -24;
     public static double purpleYMiddle = -29;
+    public static double purpleAngleLeft = 50;
+    public static double purpleAngleMiddle = 15;
+    public static double purpleAngleRight = -50;
+
 
     public static double yellowLeft = 40;
     public static double yellowMiddle = 34;
@@ -184,7 +188,7 @@ public class TheOnePathToRuleThemAll {
                 .splineTo(relCoords(-22, relTurn), relHeading(0))
                 .splineTo(relCoords(-22, -33), relHeading(0))
                 .splineTo(absCoords(initX, centerLaneY), absHeading(directionBackdrop))
-                .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop));
+                .splineTo(absCoords(22, centerLaneY), absHeading(directionBackdrop), fast);
     }
 
     private TrajectoryActionBuilder driveFromBackToBack(TrajectoryActionBuilder trajBuilder) {
@@ -195,13 +199,13 @@ public class TheOnePathToRuleThemAll {
     private TrajectoryActionBuilder placePurplePixel(TrajectoryActionBuilder trajBuilder) {
         switch (propPosition) {
             case MIDDLE:
-                trajBuilder = trajBuilder.splineTo(relCoords(purpleXMiddle, purpleYMiddle), relHeading(15));
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXMiddle, purpleYMiddle), relHeading(purpleAngleMiddle));
                 break;
             case RIGHT:
-                trajBuilder = trajBuilder.splineTo(relCoords(purpleXRight, purpleYSide), relHeading(-50));
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXRight, purpleYSide), relHeading(purpleAngleRight));
                 break;
             default:
-                trajBuilder = trajBuilder.splineTo(relCoords(purpleXLeft, purpleYSide), relHeading(60));
+                trajBuilder = trajBuilder.splineTo(relCoords(purpleXLeft, purpleYSide), relHeading(purpleAngleLeft));
                 break;
         }
         trajBuilder = trajBuilder
