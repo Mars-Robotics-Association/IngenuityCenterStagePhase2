@@ -109,6 +109,9 @@ public class TheOnePathToRuleThemAll {
                 new TranslationalVelConstraint(fastVel),
                 new AngularVelConstraint(Math.PI * 1)
         ));
+
+        // ----------  Set LEDs -----------
+        //bot.ledsGreen();
     }
 
     public static double reverseAngle(double degrees) {

@@ -34,7 +34,7 @@ public class PhaseTwoBot {
     public static double wristFlatZero = 0.27;
     public static double wristTuckedUp = 0.75;
     public static double gripperOpenPosition = 0.57;
-    public static double gripperHalfOpenPosition = .53;  // .515
+    public static double gripperHalfOpenPosition = .515;  // .515
     public static double gripperClosedPosition = .45;
     public static double wristPosition = 0.35;
     public static double gripperPosition = gripperOpenPosition;
@@ -61,22 +61,66 @@ public class PhaseTwoBot {
 
     private boolean armEncoderWasReset = false;
 
-    DigitalChannel ledRed;
-    DigitalChannel ledGreen;
+    private DigitalChannel ledRed[];
+    private DigitalChannel ledGreen[];
 
     public PhaseTwoBot(HardwareMap hardwareMap, Telemetry telemetry, ElapsedTime runtime) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.runtime = runtime;
 
-
-//        ledRed = hardwareMap.get(DigitalChannel.class, "ledRed");
-//        ledGreen = hardwareMap.get(DigitalChannel.class, "ledGreen");
-//        ledRed.setMode(DigitalChannel.Mode.OUTPUT);
-//        ledGreen.setMode(DigitalChannel.Mode.OUTPUT);
-//        ledGreen.setState(true);
-
+        // ----------------- Initialize LEDs --------------------
+        //ledsInit() ;
     }
+
+
+    public void ledsInit() {
+        ledRed = new DigitalChannel[4] ;
+        ledGreen = new DigitalChannel[4] ;
+        for (int led=0; led<4; led++ ){
+            ledRed[led] = hardwareMap.get(DigitalChannel.class, "green"+led);
+            ledGreen[led] = hardwareMap.get(DigitalChannel.class, "red"+led);
+            ledRed[led].setMode(DigitalChannel.Mode.OUTPUT);
+            ledGreen[led].setMode(DigitalChannel.Mode.OUTPUT);
+        }
+    }
+
+    public void ledsGreen() {
+        for (int led=0; led<4; led++ ){
+            //ledRed[led].setMode(DigitalChannel.Mode.INPUT);
+            //ledGreen[led].setMode(DigitalChannel.Mode.OUTPUT);
+            ledRed[led].setState(false);
+            ledGreen[led].setState(true);
+        }
+    }
+
+    public void ledsRed() {
+        for (int led=0; led<4; led++ ){
+            //ledRed[led].setMode(DigitalChannel.Mode.OUTPUT);
+            //ledGreen[led].setMode(DigitalChannel.Mode.INPUT);
+            ledRed[led].setState(true);
+            ledGreen[led].setState(false);
+        }
+    }
+
+    public void ledsOrange() {
+        for (int led=0; led<4; led++ ){
+            //ledRed[led].setMode(DigitalChannel.Mode.OUTPUT);
+            //ledGreen[led].setMode(DigitalChannel.Mode.OUTPUT);
+            ledRed[led].setState(true);
+            ledGreen[led].setState(true);
+        }
+    }
+
+    public void ledsStop() {
+        for (int led=0; led<4; led++ ){
+            ledRed[led].setState(false);
+            ledGreen[led].setState(false);
+            ledRed[led].setMode(DigitalChannel.Mode.INPUT);
+            ledGreen[led].setMode(DigitalChannel.Mode.INPUT);
+        }
+    }
+
 
     public Action AutonomousInitActions() {
         gripperArm();
