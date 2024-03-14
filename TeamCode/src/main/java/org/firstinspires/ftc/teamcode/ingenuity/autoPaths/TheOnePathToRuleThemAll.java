@@ -42,9 +42,9 @@ public class TheOnePathToRuleThemAll {
     public static final double directionSelf = 90;
 
     public static double purpleXMiddle = 1.5;
-    public static double purpleXRight = -1.5;
+    public static double purpleXRight = -2;
     public static double purpleXLeft = 2;
-    public static double purpleYSide = -19;
+    public static double purpleYSide = -24;
     public static double purpleYMiddle = -29;
     public static double purpleAngleLeft = 50;
     public static double purpleAngleMiddle = 15;
