@@ -33,6 +33,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -41,6 +42,7 @@ import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.ThreeStateToggle;
 
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Queue;
 
 @Config
@@ -53,6 +55,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
     private final boolean drivingEnabled;
 
 
+    private List<LynxModule> allHubs;
     private GamepadEx driverOp;
     private GamepadEx payloadOp;
     private ThreeStateToggle toggleX;
@@ -81,6 +84,12 @@ public abstract class PhaseTwoTeleop extends OpMode {
         toggleY = new ToggleButtonReader(payloadOp, GamepadKeys.Button.Y);
         toggleB = new ToggleButtonReader(payloadOp, GamepadKeys.Button.B);
         toggleRightStick = new ToggleButtonReader(driverOp, GamepadKeys.Button.RIGHT_STICK_BUTTON);
+
+        allHubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
 
         bot = new PhaseTwoBot(hardwareMap, telemetry, runtime);
         bot.gripperArm();
@@ -117,6 +126,10 @@ public abstract class PhaseTwoTeleop extends OpMode {
      ---------------------------------------------------------- */
     @Override
     public void loop() {
+        for (LynxModule module : allHubs) {
+            module.clearBulkCache();
+        }
+        
         driverOp.readButtons();
 
         if (useSecondController) {
