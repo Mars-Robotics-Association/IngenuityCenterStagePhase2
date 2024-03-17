@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ingenuity.autoOLD;
+package org.firstinspires.ftc.teamcode.ingenuity.testing;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,9 +17,8 @@ import org.firstinspires.ftc.teamcode.PropPosition;
 import org.firstinspires.ftc.teamcode.ingenuity.autoPaths.Alliance;
 
 @Config
-@Autonomous(name = "Prop Detection Test", group = "Auto 3.0 development")
-@Disabled
-public final class PropDetectionTest extends LinearOpMode {
+@Autonomous(name = "Prop Detect BLUE", group = "Auto 3.0 development")
+public final class PropDetectBlue extends LinearOpMode {
     public static double initX = -36;
     public static double initY = 61;
     public static double initAngle = -90;
