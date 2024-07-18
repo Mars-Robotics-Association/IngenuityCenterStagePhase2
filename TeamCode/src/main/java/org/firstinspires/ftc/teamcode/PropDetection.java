@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -50,8 +51,9 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 
+@Config
 public class PropDetection {
-
+    public static double PROPCONFIDENCE = 0.85 ;
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
@@ -157,6 +159,7 @@ public class PropDetection {
         visionPortal = builder.build();
         // Set confidence threshold for TFOD recognitions, at any time.
         //tfod.setMinResultConfidence(0.75f);
+        tfod.setMinResultConfidence((float)PROPCONFIDENCE);
 
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
