@@ -40,6 +40,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.DriveSpeed;
 import org.firstinspires.ftc.teamcode.PhaseTwoBot;
 import org.firstinspires.ftc.teamcode.ThreeStateToggle;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayDeque;
 import java.util.List;
@@ -53,6 +55,10 @@ public abstract class PhaseTwoTeleop extends OpMode {
 
     private final boolean useSecondController;
     private final boolean drivingEnabled;
+
+    private AprilTagProcessor aprilTag;
+    private VisionPortal visionPortal;
+
 
 
     private List<LynxModule> allHubs;
@@ -129,7 +135,7 @@ public abstract class PhaseTwoTeleop extends OpMode {
         for (LynxModule module : allHubs) {
             module.clearBulkCache();
         }
-        
+
         driverOp.readButtons();
 
         if (useSecondController) {

@@ -298,6 +298,8 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .addProcessor(aprilTag)
+//                    .enableLiveView(true)
+//                    .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                     .build();
         } else {
             visionPortal = new VisionPortal.Builder()

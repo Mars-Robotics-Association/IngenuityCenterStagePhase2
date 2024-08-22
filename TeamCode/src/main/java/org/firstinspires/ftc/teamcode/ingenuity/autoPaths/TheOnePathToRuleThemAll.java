@@ -55,7 +55,7 @@ public class TheOnePathToRuleThemAll {
     public static double yellowMiddle = 34;
     public static double yellowRight = 26;
 
-    public static long scanTime = 700L;
+    public static long scanTime = 4700L;
 
     public static double slowVel = 10;
     public static double fastVel = 60;
@@ -246,9 +246,9 @@ public class TheOnePathToRuleThemAll {
 
     private TrajectoryActionBuilder park(TrajectoryActionBuilder trajBuilder) {
         return trajBuilder
-                .strafeTo(absCoords(preDeliveryX, parkingY))
+                .strafeTo(absCoords(preDeliveryX, parkingY), fast)
                 .setReversed(true)
-                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop));
+                .splineTo(absCoords(parkingX, parkingY), absHeading(directionBackdrop), fast);
     }
 
 }

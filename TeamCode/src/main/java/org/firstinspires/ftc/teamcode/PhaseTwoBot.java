@@ -53,7 +53,7 @@ public class PhaseTwoBot {
     public static double positionCoefficient = 0.00075;
     public static double positionIntegralCoeff = 0.18;
     public static double positionTolerance = 3;
-    public static double rampSlope = 1900;
+    //public static double rampSlope = 1900;
 
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
@@ -411,7 +411,7 @@ public class PhaseTwoBot {
             private int rampTarget;
             private boolean rampComplete = false;
             private int armStart;
-            private double rampTime;
+            //private double rampTime;
             private double beginTs;
 
             private final String stepName;
@@ -445,7 +445,7 @@ public class PhaseTwoBot {
                     armMovementAction = this;
                     armStart = armMotor.getCurrentPosition();
                     packet.put(stepName + "initial position", armStart);
-                    this.rampTime = Math.abs(armStart - targetPos) / rampSlope;
+                    //this.rampTime = Math.abs(armStart - targetPos) / rampSlope;
                     armMotor.setTelemetry(packet, stepName);
                     setArmRunMode(Motor.RunMode.PositionControl);
                     packet.put(stepName + "target pos", targetPos);
